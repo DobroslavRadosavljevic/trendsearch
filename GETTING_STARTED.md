@@ -30,7 +30,20 @@ Live suite covers:
 - Experimental: `experimental.trendingNow`, `experimental.trendingArticles`, `experimental.geoPicker`, `experimental.categoryPicker`
 - Legacy compatibility: `dailyTrends`, `realTimeTrends` (pass if data is returned, or if `EndpointUnavailableError` is thrown)
 
-## 3. Run Full Quality Gate
+## 3. Run the CLI Locally
+
+```bash
+bun run cli --help
+bun run cli autocomplete typescript --output json
+```
+
+CLI supports all endpoint wrappers plus:
+
+- `gtrends config *`
+- `gtrends wizard`
+- `gtrends completion <bash|zsh|fish>`
+
+## 4. Run Full Quality Gate
 
 ```bash
 bun run check:all
@@ -38,7 +51,7 @@ bun run check:all
 
 This runs lint, typecheck, deterministic tests, build, package checks, and consumer smoke tests.
 
-## 4. Update Fixtures from Live Endpoints
+## 5. Update Fixtures from Live Endpoints
 
 ```bash
 bun run fixtures:record
@@ -46,7 +59,7 @@ bun run fixtures:record
 
 This script updates fixture payloads under `tests/fixtures/raw`.
 
-## 5. Branch + PR Workflow
+## 6. Branch + PR Workflow
 
 1. Branch from `main`.
 2. Implement changes in `src/` and tests in `tests/`.
@@ -59,13 +72,13 @@ bun run changeset
 4. Run `bun run check:all`.
 5. Open PR.
 
-## 6. Release Model
+## 7. Release Model
 
 - Changesets opens/updates release PR on `main`.
 - Merge release PR to publish.
 - Publish runs only when `NPM_PUBLISH_ENABLED=true` in GitHub repo variables.
 
-## 7. Live Endpoint Monitoring
+## 8. Live Endpoint Monitoring
 
 Nightly and manual live checks run via:
 

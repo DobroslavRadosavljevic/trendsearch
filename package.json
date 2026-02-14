@@ -19,8 +19,12 @@
     "type": "git",
     "url": "git+https://github.com/DobroslavRadosavljevic/gtrends.git"
   },
+  "bin": {
+    "gtrends": "./bin/gtrends.mjs"
+  },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "type": "module",
   "sideEffects": false,
@@ -38,11 +42,13 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
+    "cli": "bun run ./src/cli/main.ts",
     "test": "bun run test:all",
     "test:unit": "bun test ./tests/unit",
+    "test:cli": "bun test ./tests/cli",
     "test:contracts": "bun test ./tests/contracts",
     "test:live": "GTRENDS_LIVE=1 bun test ./tests/live",
-    "test:all": "bun run test:unit && bun run test:contracts",
+    "test:all": "bun run test:unit && bun run test:cli && bun run test:contracts",
     "fixtures:record": "bun ./scripts/record-fixtures.ts",
     "lint": "bun ultracite check",
     "format": "bun ultracite fix",
@@ -60,6 +66,9 @@
     "prepublishOnly": "bun run check:all"
   },
   "dependencies": {
+    "@clack/prompts": "^1.0.1",
+    "commander": "^14.0.3",
+    "conf": "^15.1.0",
     "zod": "^4.1.5"
   },
   "devDependencies": {

@@ -10,6 +10,7 @@ Modern Google Trends SDK for Node.js and Bun, built with native `fetch`, strict 
 - 🧱 ESM-only package contract
 - 🛡️ Built-in retry/backoff + rate limiting
 - 🍪 Optional cookie persistence support
+- 🖥️ First-class `gtrends` CLI for every endpoint
 - 🌐 Stable Google Trends API endpoints + experimental RPC/picker endpoints
 - 🧪 Deterministic fixture contracts + optional live endpoint tests
 
@@ -47,6 +48,81 @@ const result = await interestOverTime({
 
 console.log(result.data.timeline.length);
 ```
+
+## 🖥️ CLI
+
+`gtrends` ships with a production-ready CLI that wraps all stable and
+experimental endpoints.
+
+```bash
+gtrends autocomplete typescript --output json
+gtrends explore typescript --geo US --time "today 3-m" --output pretty
+gtrends experimental trending-now --geo US --language en --hours 24
+```
+
+### CLI Output Modes
+
+- `--output pretty` (human-friendly, default in TTY)
+- `--output json` (single JSON envelope, default outside TTY)
+- `--output jsonl` (JSON per line)
+
+Success envelope:
+
+```json
+{
+  "ok": true,
+  "endpoint": "autocomplete",
+  "request": { "keyword": "typescript" },
+  "data": { "topics": [] },
+  "meta": {
+    "command": "autocomplete",
+    "durationMs": 120,
+    "timestamp": "2026-02-14T00:00:00.000Z",
+    "output": "json"
+  }
+}
+```
+
+Error envelope (`json`/`jsonl`):
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "TRANSPORT_ERROR",
+    "message": "Request failed",
+    "details": {},
+    "exitCode": 5
+  }
+}
+```
+
+### CLI Config / Wizard / Completion
+
+```bash
+gtrends config set output json
+gtrends config list
+gtrends wizard
+gtrends completion bash
+```
+
+Config precedence:
+
+`flags > env > persisted config > defaults`
+
+Supported env vars include:
+
+- `GTRENDS_OUTPUT`
+- `GTRENDS_HL`
+- `GTRENDS_TZ`
+- `GTRENDS_BASE_URL`
+- `GTRENDS_TIMEOUT_MS`
+- `GTRENDS_MAX_RETRIES`
+- `GTRENDS_RETRY_BASE_DELAY_MS`
+- `GTRENDS_RETRY_MAX_DELAY_MS`
+- `GTRENDS_MAX_CONCURRENT`
+- `GTRENDS_MIN_DELAY_MS`
+- `GTRENDS_USER_AGENT`
 
 ## 🧭 API Surface
 

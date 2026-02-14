@@ -86,7 +86,31 @@ bun run release
 
 # Full quality gate before merging critical changes
 bun run check:all
+
+# CLI smoke checks
+bun run cli --help
+bun run cli autocomplete typescript --output json
 ```
+
+## CLI Operations
+
+The package ships a first-class `gtrends` binary (same npm package, no separate
+CLI package). Maintainer expectations:
+
+- Keep command wrappers aligned with all SDK endpoints.
+- Keep JSON envelopes stable for automation users.
+- Keep exit-code mapping stable:
+  - `2` usage
+  - `3` endpoint unavailable
+  - `4` rate limited
+  - `5` transport failure
+  - `6` schema/response drift
+  - `1` unknown fallback
+- Keep spinner/diagnostics on stderr and machine payloads on stdout.
+- Keep completion command working (`gtrends completion bash|zsh|fish`).
+
+For isolated automation and tests, set `GTRENDS_CONFIG_DIR` to redirect
+persisted CLI config away from user defaults.
 
 ## Publishing and Provenance
 

@@ -139,6 +139,12 @@ const main = async (): Promise<void> => {
       tempDir
     );
 
+    const cliInputPath = join(tempDir, "cli-input.json");
+    await Bun.write(
+      cliInputPath,
+      `${JSON.stringify({ keyword: "typescript" }, null, 2)}\n`
+    );
+
     for (const nodeMajor of supportedNodeMajors) {
       await runWithNodeMajor(
         npmCommand,
@@ -157,6 +163,28 @@ const main = async (): Promise<void> => {
         [
           "-e",
           `try { require(${JSON.stringify(packageName)}); throw new Error("Expected require() to fail for ESM-only package."); } catch (error) { const allowed = new Set(["ERR_REQUIRE_ESM", "ERR_PACKAGE_PATH_NOT_EXPORTED"]); if (!allowed.has(error?.code)) throw error; }`,
+        ],
+        tempDir
+      );
+
+      await runWithNodeMajor(
+        npmCommand,
+        nodeMajor,
+        [
+          "--input-type=module",
+          "-e",
+          `import { createRequire } from "node:module"; import { join, dirname } from "node:path"; import { spawnSync } from "node:child_process"; const require = createRequire(import.meta.url); const pkgPath = require.resolve(${JSON.stringify(`${packageName}/package.json`)}); const pkg = require(pkgPath); const binRel = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.gtrends; if (!binRel) throw new Error("Missing gtrends bin entry."); const binPath = join(dirname(pkgPath), binRel); const help = spawnSync(process.execPath, [binPath, "--help"], { encoding: "utf8" }); if (help.status !== 0) throw new Error("gtrends --help failed: " + (help.stderr || help.stdout)); if (!help.stdout.includes("Usage")) throw new Error("Expected usage output from gtrends --help.");`,
+        ],
+        tempDir
+      );
+
+      await runWithNodeMajor(
+        npmCommand,
+        nodeMajor,
+        [
+          "--input-type=module",
+          "-e",
+          `import { createRequire } from "node:module"; import { join, dirname } from "node:path"; import { spawnSync } from "node:child_process"; const require = createRequire(import.meta.url); const pkgPath = require.resolve(${JSON.stringify(`${packageName}/package.json`)}); const pkg = require(pkgPath); const binRel = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.gtrends; if (!binRel) throw new Error("Missing gtrends bin entry."); const binPath = join(dirname(pkgPath), binRel); const result = spawnSync(process.execPath, [binPath, "autocomplete", "--input", ${JSON.stringify(cliInputPath)}, "--output", "json", "--no-spinner", "--base-url", "http://127.0.0.1:1", "--timeout-ms", "5", "--max-retries", "0"], { encoding: "utf8" }); if (result.status === 0) throw new Error("Expected transport failure for local mock endpoint."); const payload = JSON.parse(result.stdout || "{}"); if (payload.ok !== false) throw new Error("Expected JSON error envelope."); if (!payload.error || typeof payload.error.code !== "string") throw new Error("Missing structured error payload.");`,
         ],
         tempDir
       );
