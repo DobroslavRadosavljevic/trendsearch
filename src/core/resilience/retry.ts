@@ -1,3 +1,5 @@
+import pRetry from "p-retry";
+
 export interface RetryDecision {
   retryable: boolean;
   reason?: string;
@@ -9,17 +11,6 @@ export interface RetryPolicy {
   maxDelayMs: number;
 }
 
-const sleep = async (ms: number): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-
-const computeDelay = (attempt: number, policy: RetryPolicy): number => {
-  const exp = Math.min(policy.maxDelayMs, policy.baseDelayMs * 2 ** attempt);
-  const jitter = Math.floor(Math.random() * Math.max(1, exp * 0.2));
-  return Math.min(policy.maxDelayMs, exp + jitter);
-};
-
 export const runWithRetry = async <T>(args: {
   task: () => Promise<T>;
   policy: RetryPolicy;
@@ -27,19 +18,16 @@ export const runWithRetry = async <T>(args: {
 }): Promise<T> => {
   const { task, policy, shouldRetry } = args;
 
-  let attempt = 0;
-  for (;;) {
-    try {
-      return await task();
-    } catch (error) {
-      const decision = shouldRetry(error);
-      if (!decision.retryable || attempt >= policy.maxRetries) {
-        throw error;
-      }
+  const retries = Math.max(0, policy.maxRetries);
+  const minTimeout = Math.max(0, policy.baseDelayMs);
+  const maxTimeout = Math.max(minTimeout, policy.maxDelayMs);
 
-      const delay = computeDelay(attempt, policy);
-      attempt += 1;
-      await sleep(delay);
-    }
-  }
+  return pRetry(task, {
+    retries,
+    minTimeout,
+    maxTimeout,
+    factor: 2,
+    randomize: true,
+    shouldRetry: ({ error }) => shouldRetry(error).retryable,
+  });
 };

@@ -50,4 +50,28 @@ describe("runWithRetry", () => {
 
     expect(calls).toBe(1);
   });
+
+  it("surfaces the original error when retries are exhausted", async () => {
+    const terminal = new Error("still failing");
+    let calls = 0;
+
+    try {
+      await runWithRetry({
+        task: async () => {
+          calls += 1;
+          throw terminal;
+        },
+        policy: {
+          maxRetries: 2,
+          baseDelayMs: 1,
+          maxDelayMs: 4,
+        },
+        shouldRetry: () => ({ retryable: true }),
+      });
+      throw new Error("Expected runWithRetry to throw.");
+    } catch (error) {
+      expect(error).toBe(terminal);
+      expect(calls).toBe(3);
+    }
+  });
 });

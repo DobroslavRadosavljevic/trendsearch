@@ -8,7 +8,7 @@ Modern Google Trends SDK for Node.js and Bun, built with native `fetch`, strict 
 - 🧠 Full TypeScript-first API and exported inferred types
 - ⚡ Native `fetch` transport (Node 20+ and Bun)
 - 🧱 ESM-only package contract
-- 🛡️ Built-in retry/backoff + rate limiting
+- 🛡️ Built-in retry/backoff + rate limiting (`p-retry` + `p-queue`)
 - 🍪 Optional cookie persistence support
 - 🖥️ First-class `gtrends` CLI for every endpoint
 - 🌐 Stable Google Trends API endpoints + experimental RPC/picker endpoints
