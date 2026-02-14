@@ -1,221 +1,550 @@
-# 📦 npm-ts-start
+# gtrends 📈
 
-A production-grade starter for building and publishing TypeScript npm packages.
+Modern Google Trends SDK for Node.js and Bun, built with native `fetch`, strict Zod validation, and a production-friendly client API.
 
-## ✨ What You Get
+## ✨ Highlights
 
-- 🔷 **TypeScript-first package setup** with strict defaults
-- 📦 **ESM-only package contract** (`exports`, types, and Node 20+ baseline)
-- ⚡ **Fast builds** with `tsdown`
-- 🧪 **Runtime tests** with Bun test runner
-- 🎨 **Lint + format** with Ultracite (`oxlint` + `oxfmt`)
-- 🧰 **Package contract checks** with `publint` + `@arethetypeswrong/cli`
-- 🔒 **Supply-chain aware publishing** with npm trusted publishing + provenance
-- 🚀 **Automated releases** with Changesets + GitHub Actions
-- 🧯 **Publish safety switch** via `NPM_PUBLISH_ENABLED`
-- 🐶 **Git hooks + Conventional Commits** via Husky + commitlint
-- 🤖 **Dependency maintenance** with Dependabot + weekly audit workflow
+- 🔒 Strict schema validation by default (Zod-backed)
+- 🧠 Full TypeScript-first API and exported inferred types
+- ⚡ Native `fetch` transport (Node 20+ and Bun)
+- 🧱 ESM-only package contract
+- 🛡️ Built-in retry/backoff + rate limiting (`p-retry` + `p-queue`)
+- 🍪 Optional cookie persistence support
+- 🖥️ First-class `gtrends` CLI for every endpoint
+- 🌐 Stable Google Trends API endpoints + experimental RPC/picker endpoints
+- 🧪 Deterministic fixture contracts + optional live endpoint tests
 
-## 🧱 Tech Stack
+## 📦 Install
 
-- Runtime + package manager: **Bun**
-- Language: **TypeScript**
-- Bundler: **tsdown**
-- Tests: **bun:test**
-- Lint/format: **Ultracite**
-- Release/versioning: **Changesets**
-- CI/CD: **GitHub Actions**
-- Registry: **npm**
+```bash
+bun add gtrends
+# or
+npm install gtrends
+```
 
-## 📚 Read These First
+## ✅ Runtime Contract
 
-- `GETTING_STARTED.md` -> full beginner flow (template -> first publish)
-- `CONTRIBUTING.md` -> contributor workflow
-- `MAINTAINERS.md` -> owner/maintainer runbook
-- `.changeset/README.md` -> changeset conventions
+- 🟢 Node.js `>=20`
+- 🟢 Bun `>=1.3.9`
+- 🟢 ESM-only package
+- 🔴 CommonJS `require("gtrends")` is intentionally unsupported
 
-## 📋 Prerequisites
+If you are in a CJS project, use dynamic import:
 
-- Bun `1.3.9+`
-- Node.js `20+` for runtime compatibility
-- Node.js `22+` in release CI for trusted publishing requirements
+```js
+const gtrends = await import("gtrends");
+```
 
 ## 🚀 Quick Start
 
-1. Use this repository as a GitHub template.
-2. Clone your new repository:
+```ts
+import { interestOverTime } from "gtrends";
 
-```bash
-git clone https://github.com/<your-user-or-org>/<your-repo>.git
-cd <your-repo>
+const result = await interestOverTime({
+  keywords: ["typescript"],
+  geo: "US",
+  time: "today 3-m",
+});
+
+console.log(result.data.timeline.length);
 ```
 
-3. Install dependencies:
+## 🖥️ CLI
+
+`gtrends` ships with a production-ready CLI that wraps all stable and
+experimental endpoints.
 
 ```bash
-bun install
+gtrends autocomplete typescript --output json
+gtrends explore typescript --geo US --time "today 3-m" --output pretty
+gtrends experimental trending-now --geo US --language en --hours 24
 ```
 
-4. Update `package.json` metadata:
-   - `name`
-   - `description`
-   - `author`
-   - `homepage`
-   - `bugs.url`
-   - `repository.url`
+### CLI Output Modes
 
-5. Run full checks:
+- `--output pretty` (human-friendly, default in TTY)
+- `--output json` (single JSON envelope, default outside TTY)
+- `--output jsonl` (JSON per line)
+
+Success envelope:
+
+```json
+{
+  "ok": true,
+  "endpoint": "autocomplete",
+  "request": { "keyword": "typescript" },
+  "data": { "topics": [] },
+  "meta": {
+    "command": "autocomplete",
+    "durationMs": 120,
+    "timestamp": "2026-02-14T00:00:00.000Z",
+    "output": "json"
+  }
+}
+```
+
+Error envelope (`json`/`jsonl`):
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "TRANSPORT_ERROR",
+    "message": "Request failed",
+    "details": {},
+    "exitCode": 5
+  }
+}
+```
+
+### CLI Config / Wizard / Completion
+
+```bash
+gtrends config set output json
+gtrends config list
+gtrends wizard
+gtrends completion bash
+```
+
+Config precedence:
+
+`flags > env > persisted config > defaults`
+
+Supported env vars include:
+
+- `GTRENDS_OUTPUT`
+- `GTRENDS_HL`
+- `GTRENDS_TZ`
+- `GTRENDS_BASE_URL`
+- `GTRENDS_TIMEOUT_MS`
+- `GTRENDS_MAX_RETRIES`
+- `GTRENDS_RETRY_BASE_DELAY_MS`
+- `GTRENDS_RETRY_MAX_DELAY_MS`
+- `GTRENDS_MAX_CONCURRENT`
+- `GTRENDS_MIN_DELAY_MS`
+- `GTRENDS_USER_AGENT`
+
+## 🧭 API Surface
+
+### Stable Endpoints
+
+- `autocomplete`
+- `explore`
+- `interestOverTime`
+- `interestByRegion`
+- `relatedQueries`
+- `relatedTopics`
+- `trendingNow`
+- `trendingArticles`
+- `dailyTrends` (legacy compatibility)
+- `realTimeTrends` (legacy compatibility)
+
+### Experimental Endpoints
+
+- `experimental.trendingNow`
+- `experimental.trendingArticles`
+- `experimental.geoPicker`
+- `experimental.categoryPicker`
+
+⚠️ Experimental endpoints are semver-minor unstable because Google can change internal RPC payloads.
+
+ℹ️ `dailyTrends` and `realTimeTrends` are kept for compatibility and may throw `EndpointUnavailableError` if Google retires those legacy routes.
+
+## 🧰 Client Configuration
+
+Use `createClient` when you want shared runtime defaults and transport controls:
+
+```ts
+import { MemoryCookieStore, createClient } from "gtrends";
+
+const client = createClient({
+  timeoutMs: 15_000,
+  baseUrl: "https://trends.google.com",
+  hl: "en-US",
+  tz: 240,
+  retries: {
+    maxRetries: 3,
+    baseDelayMs: 500,
+    maxDelayMs: 8_000,
+  },
+  rateLimit: {
+    maxConcurrent: 1,
+    minDelayMs: 1_000,
+  },
+  userAgent:
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+  cookieStore: new MemoryCookieStore(),
+  proxyHook: async ({ url, init }) => ({ url, init }),
+});
+```
+
+### Default Client Values
+
+- `timeoutMs`: `15000`
+- `baseUrl`: `https://trends.google.com`
+- `hl`: `en-US`
+- `tz`: host timezone offset (`new Date().getTimezoneOffset()`)
+- `retries.maxRetries`: `3`
+- `retries.baseDelayMs`: `500`
+- `retries.maxDelayMs`: `8000`
+- `rateLimit.maxConcurrent`: `1`
+- `rateLimit.minDelayMs`: `1000`
+
+## 🧪 Request/Response Pattern
+
+All endpoint calls return:
+
+```ts
+{
+  data: ..., // normalized typed payload
+  raw?: ...  // included only when debugRawResponse=true
+}
+```
+
+Enable raw payload diagnostics per request:
+
+```ts
+const result = await client.explore(
+  { keywords: ["typescript"], geo: "US" },
+  { debugRawResponse: true }
+);
+
+console.log(result.raw);
+```
+
+## 📚 Endpoint Usage
+
+### `autocomplete`
+
+```ts
+import { autocomplete } from "gtrends";
+
+const result = await autocomplete({ keyword: "typescri" });
+console.log(result.data.topics);
+```
+
+Input:
+
+- `keyword` (required)
+- `hl`, `tz` (optional)
+
+Output:
+
+- `data.topics`: topic list (`mid`, `title`, `type`)
+
+### `explore`
+
+```ts
+import { explore } from "gtrends";
+
+const result = await explore({
+  keywords: ["typescript", "javascript"],
+  geo: "US",
+  time: "today 12-m",
+  category: 0,
+  property: "",
+});
+
+console.log(result.data.widgets);
+```
+
+Input:
+
+- `keywords` (required, array)
+- `geo` (string or string[])
+- `time`, `category`, `property`, `hl`, `tz`
+
+Output:
+
+- `data.widgets`: exploration widgets
+- `data.comparisonItem`: normalized comparison items used in `req`
+
+### `interestOverTime`
+
+```ts
+import { interestOverTime } from "gtrends";
+
+const result = await interestOverTime({
+  keywords: ["typescript"],
+  geo: "US",
+  time: "today 3-m",
+});
+
+console.log(result.data.timeline);
+```
+
+Output:
+
+- `data.timeline`: timeline points (`time`, `value`, `formattedTime`, `isPartial`, ...)
+
+### `interestByRegion`
+
+```ts
+import { interestByRegion } from "gtrends";
+
+const result = await interestByRegion({
+  keywords: ["typescript"],
+  geo: "US",
+  resolution: "REGION",
+});
+
+console.log(result.data.regions);
+```
+
+Output:
+
+- `data.regions`: geo map entries (`geoCode`, `geoName`, `value`, ...)
+
+### `relatedQueries`
+
+```ts
+import { relatedQueries } from "gtrends";
+
+const result = await relatedQueries({
+  keywords: ["typescript"],
+  geo: "US",
+});
+
+console.log(result.data.top);
+console.log(result.data.rising);
+```
+
+Output:
+
+- `data.top`
+- `data.rising`
+- `value` can be `number | string` (`"Breakout"`-style upstream values are preserved)
+
+### `relatedTopics`
+
+```ts
+import { relatedTopics } from "gtrends";
+
+const result = await relatedTopics({
+  keywords: ["typescript"],
+  geo: "US",
+});
+
+console.log(result.data.top);
+console.log(result.data.rising);
+```
+
+Output:
+
+- `data.top`
+- `data.rising`
+
+### `dailyTrends`
+
+```ts
+import { dailyTrends } from "gtrends";
+
+const result = await dailyTrends({
+  geo: "US",
+  category: "all",
+});
+
+console.log(result.data.days);
+console.log(result.data.trends);
+```
+
+Input:
+
+- `geo` (required)
+- `category`, `date`, `ns`, `hl`, `tz`
+
+Output:
+
+- `data.days`: day-grouped payload
+- `data.trends`: flattened trend list
+
+### `realTimeTrends`
+
+```ts
+import { realTimeTrends } from "gtrends";
+
+const result = await realTimeTrends({
+  geo: "US",
+  category: "all",
+});
+
+console.log(result.data.stories);
+```
+
+Input:
+
+- `geo` (required)
+- `category`, `fi`, `fs`, `ri`, `rs`, `sort`, `hl`, `tz`
+
+Output:
+
+- `data.stories`: story summaries
+
+### `trendingNow`
+
+```ts
+import { trendingNow } from "gtrends";
+
+const result = await trendingNow({
+  geo: "US",
+  language: "en",
+  hours: 24,
+});
+
+console.log(result.data.items[0]?.articleKeys);
+```
+
+### `trendingArticles`
+
+```ts
+import { trendingArticles } from "gtrends";
+
+const result = await trendingArticles({
+  articleKeys: [[1, "en", "US"]],
+  articleCount: 5,
+});
+
+console.log(result.data.articles);
+```
+
+## 🧪 Experimental Endpoint Usage
+
+`experimental.trendingNow` and `experimental.trendingArticles` are aliases of the stable root methods and remain available for backward compatibility.
+
+### `experimental.geoPicker`
+
+```ts
+import { experimental } from "gtrends";
+
+const result = await experimental.geoPicker({ hl: "en-US" });
+console.log(result.data.items);
+```
+
+### `experimental.categoryPicker`
+
+```ts
+import { experimental } from "gtrends";
+
+const result = await experimental.categoryPicker({ hl: "en-US" });
+console.log(result.data.items);
+```
+
+## 🧾 Schemas and Types
+
+All request/response schemas and inferred types are exported:
+
+```ts
+import {
+  schemas,
+  type InterestOverTimeRequest,
+  type InterestOverTimeResponse,
+} from "gtrends";
+
+const req: InterestOverTimeRequest = {
+  keywords: ["typescript"],
+};
+
+const parsed = schemas.interestOverTimeResponseSchema.parse(rawPayload);
+```
+
+`schemas` includes stable + experimental schema exports, plus `z`.
+
+## 🚨 Errors
+
+Typed errors:
+
+- `GTrendsError`
+- `TransportError`
+- `RateLimitError`
+- `SchemaValidationError`
+- `EndpointUnavailableError`
+- `UnexpectedResponseError`
+
+Example:
+
+```ts
+import {
+  EndpointUnavailableError,
+  RateLimitError,
+  SchemaValidationError,
+} from "gtrends";
+
+try {
+  await interestOverTime({ keywords: ["typescript"] });
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    console.error("Rate limited:", error.status);
+  }
+
+  if (error instanceof SchemaValidationError) {
+    console.error("Schema drift:", error.issues);
+  }
+
+  if (error instanceof EndpointUnavailableError) {
+    console.error("Legacy endpoint unavailable:", error.replacements);
+  }
+}
+```
+
+## 🧪 Testing and Quality Gates
+
+Run tests:
+
+```bash
+bun run test:unit
+bun run test:contracts
+bun run test:all
+GTRENDS_LIVE=1 bun run test:live
+```
+
+Package checks:
+
+```bash
+bun run build
+bun run check:package
+bun run check:pack
+bun run test:consumer
+```
+
+Full local gate:
 
 ```bash
 bun run check:all
 ```
 
-6. Start coding in `src/index.ts`.
+## 📼 Fixture Workflow
 
-## 📦 Runtime Contract
-
-- ✅ ESM-only package
-- ✅ Node.js `>=20`
-- ❌ CommonJS `require()` support (intentionally disabled)
-
-CommonJS consumers should use dynamic import:
-
-```js
-(async () => {
-  const { fn } = await import("your-package-name");
-  console.log(fn());
-})();
-```
-
-## 🛠️ Scripts
-
-| Command                    | Description                                            |
-| -------------------------- | ------------------------------------------------------ |
-| `bun run dev`              | Build in watch mode                                    |
-| `bun run build`            | Build package into `dist/`                             |
-| `bun run test`             | Run runtime tests                                      |
-| `bun run lint`             | Run lint and formatting checks                         |
-| `bun run format`           | Apply lint/format fixes                                |
-| `bun run typecheck`        | TypeScript type check (no emit)                        |
-| `bun run check:pack`       | Validate packed output (`npm pack --dry-run`)          |
-| `bun run check:package`    | Run package contract checks                            |
-| `bun run test:consumer`    | Smoke-test packed artifact in temp consumer project    |
-| `bun run check:all`        | Full quality gate                                      |
-| `bun run changeset`        | Add release intent for releasable changes              |
-| `bun run release:status`   | Show pending release plan                              |
-| `bun run version-packages` | Apply version + changelog updates from changesets      |
-| `bun run release`          | Publish with Changesets                                |
-| `bun run release:ci`       | CI publish path, guarded by `NPM_PUBLISH_ENABLED=true` |
-
-## 🌿 Branch + PR Workflow
-
-Always work on branches, not directly on `main`.
-
-1. Sync local `main`:
+Record/update fixtures from live endpoints:
 
 ```bash
-git checkout main
-git pull --rebase origin main
+bun run fixtures:record
 ```
 
-2. Create a feature branch:
+Fixtures are stored under:
 
-```bash
-git checkout -b feat/<short-name>
-```
+- `tests/fixtures/raw/*`
 
-3. Make changes.
-4. If package behavior/API/metadata changed, add changeset:
+Contract tests use those fixtures for deterministic CI.
 
-```bash
-bun run changeset
-```
+## 🤖 CI Notes
 
-5. Run checks:
+- `CI` workflow runs deterministic tests and package quality checks.
+- `Live Endpoints` workflow (`.github/workflows/live-endpoints.yml`) runs nightly + manual and executes `test:live`.
 
-```bash
-bun run check:all
-```
+## 🔁 Migration
 
-6. Commit + push branch.
-7. Open PR to `main`.
+Migrating from `google-trends-api`?
 
-CI enforces changesets for package-impacting paths.
+👉 See `MIGRATION.md` for method mapping and before/after examples.
 
-## 🚢 Release Flow
+## 🛠️ Development Scripts
 
-1. PR with changeset merges to `main`.
-2. `release.yml` runs `changesets/action`.
-3. A release PR is created/updated.
-4. Merge release PR.
-5. Publish happens only when `NPM_PUBLISH_ENABLED=true`.
-
-## 🔐 Trusted Publishing Setup (npm)
-
-1. Sign in at [npmjs.com](https://www.npmjs.com).
-2. Open package settings.
-3. Go to **Publishing access**.
-4. Click **Add trusted publisher**.
-5. Select **GitHub Actions**.
-6. Configure:
-   - repository owner
-   - repository name
-   - workflow file: `release.yml`
-
-Then set GitHub repository variable:
-
-- `NPM_PUBLISH_ENABLED=true` to allow real publishing
-- leave unset/false to block publishing safely
-
-## 🔄 CI/CD Overview
-
-### `ci.yml`
-
-- `quality`: full gate on Node 20
-- `compat`: Node 20/22/24 matrix
-- `changeset-required`: PR release-intent guard
-
-### `release.yml`
-
-- runs on push to `main` + manual dispatch
-- runs quality checks
-- uses trusted publishing + provenance
-- publishes only when `NPM_PUBLISH_ENABLED=true`
-
-### `security-audit.yml`
-
-- weekly `bun audit --production`
-- `bun outdated` summary output
-
-## 🗂️ Project Structure
-
-```txt
-├── src/
-│   └── index.ts
-├── tests/
-│   └── index.test.ts
-├── scripts/
-│   └── consumer-smoke.ts
-├── dist/                           # generated
-├── .changeset/
-│   ├── config.json
-│   └── README.md
-├── .github/
-│   ├── workflows/
-│   │   ├── ci.yml
-│   │   ├── release.yml
-│   │   └── security-audit.yml
-│   └── ISSUE_TEMPLATE/
-├── GETTING_STARTED.md
-├── MAINTAINERS.md
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-├── SECURITY.md
-├── tsconfig.json
-├── tsconfig.typecheck.json
-├── tsdown.config.ts
-└── package.json
-```
+- `bun run dev` - watch build
+- `bun run build` - build dist
+- `bun run typecheck` - TypeScript checks
+- `bun run lint` - format/lint checks
+- `bun run format` - format/fix
+- `bun run changeset` - add release note
 
 ## 📄 License
 
