@@ -37,5 +37,5 @@ jobs:
 
       - name: Run live endpoint suite
         env:
-          GTRENDS_LIVE: "1"
+          TRENDSEARCH_LIVE: "1"
         run: bun run test:live

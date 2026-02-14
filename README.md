@@ -1,4 +1,4 @@
-# gtrends 📈
+# trendsearch 📈
 
 Modern Google Trends SDK for Node.js and Bun, built with native `fetch`, strict Zod validation, and a production-friendly client API.
 
@@ -10,16 +10,16 @@ Modern Google Trends SDK for Node.js and Bun, built with native `fetch`, strict 
 - 🧱 ESM-only package contract
 - 🛡️ Built-in retry/backoff + rate limiting (`p-retry` + `p-queue`)
 - 🍪 Optional cookie persistence support
-- 🖥️ First-class `gtrends` CLI for every endpoint
+- 🖥️ First-class `trendsearch` CLI for every endpoint
 - 🌐 Stable Google Trends API endpoints + experimental RPC/picker endpoints
 - 🧪 Deterministic fixture contracts + optional live endpoint tests
 
 ## 📦 Install
 
 ```bash
-bun add gtrends
+bun add trendsearch
 # or
-npm install gtrends
+npm install trendsearch
 ```
 
 ## ✅ Runtime Contract
@@ -27,18 +27,18 @@ npm install gtrends
 - 🟢 Node.js `>=20`
 - 🟢 Bun `>=1.3.9`
 - 🟢 ESM-only package
-- 🔴 CommonJS `require("gtrends")` is intentionally unsupported
+- 🔴 CommonJS `require("trendsearch")` is intentionally unsupported
 
 If you are in a CJS project, use dynamic import:
 
 ```js
-const gtrends = await import("gtrends");
+const trendsearch = await import("trendsearch");
 ```
 
 ## 🚀 Quick Start
 
 ```ts
-import { interestOverTime } from "gtrends";
+import { interestOverTime } from "trendsearch";
 
 const result = await interestOverTime({
   keywords: ["typescript"],
@@ -51,13 +51,13 @@ console.log(result.data.timeline.length);
 
 ## 🖥️ CLI
 
-`gtrends` ships with a production-ready CLI that wraps all stable and
+`trendsearch` ships with a production-ready CLI that wraps all stable and
 experimental endpoints.
 
 ```bash
-gtrends autocomplete typescript --output json
-gtrends explore typescript --geo US --time "today 3-m" --output pretty
-gtrends experimental trending-now --geo US --language en --hours 24
+trendsearch autocomplete typescript --output json
+trendsearch explore typescript --geo US --time "today 3-m" --output pretty
+trendsearch experimental trending-now --geo US --language en --hours 24
 ```
 
 ### CLI Output Modes
@@ -100,10 +100,10 @@ Error envelope (`json`/`jsonl`):
 ### CLI Config / Wizard / Completion
 
 ```bash
-gtrends config set output json
-gtrends config list
-gtrends wizard
-gtrends completion bash
+trendsearch config set output json
+trendsearch config list
+trendsearch wizard
+trendsearch completion bash
 ```
 
 Config precedence:
@@ -112,17 +112,17 @@ Config precedence:
 
 Supported env vars include:
 
-- `GTRENDS_OUTPUT`
-- `GTRENDS_HL`
-- `GTRENDS_TZ`
-- `GTRENDS_BASE_URL`
-- `GTRENDS_TIMEOUT_MS`
-- `GTRENDS_MAX_RETRIES`
-- `GTRENDS_RETRY_BASE_DELAY_MS`
-- `GTRENDS_RETRY_MAX_DELAY_MS`
-- `GTRENDS_MAX_CONCURRENT`
-- `GTRENDS_MIN_DELAY_MS`
-- `GTRENDS_USER_AGENT`
+- `TRENDSEARCH_OUTPUT`
+- `TRENDSEARCH_HL`
+- `TRENDSEARCH_TZ`
+- `TRENDSEARCH_BASE_URL`
+- `TRENDSEARCH_TIMEOUT_MS`
+- `TRENDSEARCH_MAX_RETRIES`
+- `TRENDSEARCH_RETRY_BASE_DELAY_MS`
+- `TRENDSEARCH_RETRY_MAX_DELAY_MS`
+- `TRENDSEARCH_MAX_CONCURRENT`
+- `TRENDSEARCH_MIN_DELAY_MS`
+- `TRENDSEARCH_USER_AGENT`
 
 ## 🧭 API Surface
 
@@ -155,7 +155,7 @@ Supported env vars include:
 Use `createClient` when you want shared runtime defaults and transport controls:
 
 ```ts
-import { MemoryCookieStore, createClient } from "gtrends";
+import { MemoryCookieStore, createClient } from "trendsearch";
 
 const client = createClient({
   timeoutMs: 15_000,
@@ -217,7 +217,7 @@ console.log(result.raw);
 ### `autocomplete`
 
 ```ts
-import { autocomplete } from "gtrends";
+import { autocomplete } from "trendsearch";
 
 const result = await autocomplete({ keyword: "typescri" });
 console.log(result.data.topics);
@@ -235,7 +235,7 @@ Output:
 ### `explore`
 
 ```ts
-import { explore } from "gtrends";
+import { explore } from "trendsearch";
 
 const result = await explore({
   keywords: ["typescript", "javascript"],
@@ -262,7 +262,7 @@ Output:
 ### `interestOverTime`
 
 ```ts
-import { interestOverTime } from "gtrends";
+import { interestOverTime } from "trendsearch";
 
 const result = await interestOverTime({
   keywords: ["typescript"],
@@ -280,7 +280,7 @@ Output:
 ### `interestByRegion`
 
 ```ts
-import { interestByRegion } from "gtrends";
+import { interestByRegion } from "trendsearch";
 
 const result = await interestByRegion({
   keywords: ["typescript"],
@@ -298,7 +298,7 @@ Output:
 ### `relatedQueries`
 
 ```ts
-import { relatedQueries } from "gtrends";
+import { relatedQueries } from "trendsearch";
 
 const result = await relatedQueries({
   keywords: ["typescript"],
@@ -318,7 +318,7 @@ Output:
 ### `relatedTopics`
 
 ```ts
-import { relatedTopics } from "gtrends";
+import { relatedTopics } from "trendsearch";
 
 const result = await relatedTopics({
   keywords: ["typescript"],
@@ -337,7 +337,7 @@ Output:
 ### `dailyTrends`
 
 ```ts
-import { dailyTrends } from "gtrends";
+import { dailyTrends } from "trendsearch";
 
 const result = await dailyTrends({
   geo: "US",
@@ -361,7 +361,7 @@ Output:
 ### `realTimeTrends`
 
 ```ts
-import { realTimeTrends } from "gtrends";
+import { realTimeTrends } from "trendsearch";
 
 const result = await realTimeTrends({
   geo: "US",
@@ -383,7 +383,7 @@ Output:
 ### `trendingNow`
 
 ```ts
-import { trendingNow } from "gtrends";
+import { trendingNow } from "trendsearch";
 
 const result = await trendingNow({
   geo: "US",
@@ -397,7 +397,7 @@ console.log(result.data.items[0]?.articleKeys);
 ### `trendingArticles`
 
 ```ts
-import { trendingArticles } from "gtrends";
+import { trendingArticles } from "trendsearch";
 
 const result = await trendingArticles({
   articleKeys: [[1, "en", "US"]],
@@ -414,7 +414,7 @@ console.log(result.data.articles);
 ### `experimental.geoPicker`
 
 ```ts
-import { experimental } from "gtrends";
+import { experimental } from "trendsearch";
 
 const result = await experimental.geoPicker({ hl: "en-US" });
 console.log(result.data.items);
@@ -423,7 +423,7 @@ console.log(result.data.items);
 ### `experimental.categoryPicker`
 
 ```ts
-import { experimental } from "gtrends";
+import { experimental } from "trendsearch";
 
 const result = await experimental.categoryPicker({ hl: "en-US" });
 console.log(result.data.items);
@@ -438,7 +438,7 @@ import {
   schemas,
   type InterestOverTimeRequest,
   type InterestOverTimeResponse,
-} from "gtrends";
+} from "trendsearch";
 
 const req: InterestOverTimeRequest = {
   keywords: ["typescript"],
@@ -453,7 +453,7 @@ const parsed = schemas.interestOverTimeResponseSchema.parse(rawPayload);
 
 Typed errors:
 
-- `GTrendsError`
+- `TrendSearchError`
 - `TransportError`
 - `RateLimitError`
 - `SchemaValidationError`
@@ -467,7 +467,7 @@ import {
   EndpointUnavailableError,
   RateLimitError,
   SchemaValidationError,
-} from "gtrends";
+} from "trendsearch";
 
 try {
   await interestOverTime({ keywords: ["typescript"] });
@@ -494,7 +494,7 @@ Run tests:
 bun run test:unit
 bun run test:contracts
 bun run test:all
-GTRENDS_LIVE=1 bun run test:live
+TRENDSEARCH_LIVE=1 bun run test:live
 ```
 
 Package checks:

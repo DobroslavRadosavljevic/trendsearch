@@ -9,5 +9,5 @@ manage versioning and changelog entries.
 
 ### Added
 
-- Initial `gtrends` release.
+- Initial `trendsearch` release.
 - ESM-only TypeScript package starter with Bun-first tooling.

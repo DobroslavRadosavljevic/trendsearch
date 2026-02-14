@@ -5,7 +5,7 @@ Use it to understand architecture, release mechanics, and safe change patterns.
 
 ## 1) Project Purpose
 
-`gtrends` is a Google Trends API fetching library for Node.js and Bun, built as
+`trendsearch` is a Google Trends API fetching library for Node.js and Bun, built as
 a publishable TypeScript npm package with:
 
 - ESM-only output

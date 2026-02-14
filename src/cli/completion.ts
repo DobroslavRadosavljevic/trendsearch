@@ -153,7 +153,7 @@ complete -c ${bin} -f -a "(__${bin}_complete)"
 
 export const renderCompletionScript = (
   shell: string,
-  binaryName = "gtrends"
+  binaryName = "trendsearch"
 ): string | undefined => {
   if (shell === "bash" || shell === "zsh" || shell === "fish") {
     const renderer = scriptByShell[shell as SupportedShell];

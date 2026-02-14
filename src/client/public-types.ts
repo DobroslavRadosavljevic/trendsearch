@@ -64,7 +64,7 @@ export interface EndpointOutput<TData, TRaw = unknown> {
   raw?: TRaw;
 }
 
-export interface GTrendsClient {
+export interface TrendSearchClient {
   autocomplete: (
     input: { keyword: string; hl?: string; tz?: number },
     options?: EndpointDebugOptions

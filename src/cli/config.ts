@@ -19,7 +19,7 @@ export const createCliConfigStore = (
   options: CreateCliConfigStoreOptions = {}
 ): CliConfigStore => {
   const store = new Conf<Record<string, unknown>>({
-    projectName: "gtrends",
+    projectName: "trendsearch",
     configName: "cli",
     cwd: options.cwd,
   });
@@ -133,18 +133,18 @@ const toOutputModeOrUndefined = (value: unknown): OutputMode | undefined => {
 const readEnv = (
   env: Record<string, string | undefined>
 ): GlobalFlagOptions => ({
-  output: toOutputModeOrUndefined(env.GTRENDS_OUTPUT),
-  spinner: toBooleanOrUndefined(env.GTRENDS_SPINNER),
-  hl: env.GTRENDS_HL,
-  tz: toNumberOrUndefined(env.GTRENDS_TZ),
-  baseUrl: env.GTRENDS_BASE_URL,
-  timeoutMs: toNumberOrUndefined(env.GTRENDS_TIMEOUT_MS),
-  maxRetries: toNumberOrUndefined(env.GTRENDS_MAX_RETRIES),
-  retryBaseDelayMs: toNumberOrUndefined(env.GTRENDS_RETRY_BASE_DELAY_MS),
-  retryMaxDelayMs: toNumberOrUndefined(env.GTRENDS_RETRY_MAX_DELAY_MS),
-  maxConcurrent: toNumberOrUndefined(env.GTRENDS_MAX_CONCURRENT),
-  minDelayMs: toNumberOrUndefined(env.GTRENDS_MIN_DELAY_MS),
-  userAgent: env.GTRENDS_USER_AGENT,
+  output: toOutputModeOrUndefined(env.TRENDSEARCH_OUTPUT),
+  spinner: toBooleanOrUndefined(env.TRENDSEARCH_SPINNER),
+  hl: env.TRENDSEARCH_HL,
+  tz: toNumberOrUndefined(env.TRENDSEARCH_TZ),
+  baseUrl: env.TRENDSEARCH_BASE_URL,
+  timeoutMs: toNumberOrUndefined(env.TRENDSEARCH_TIMEOUT_MS),
+  maxRetries: toNumberOrUndefined(env.TRENDSEARCH_MAX_RETRIES),
+  retryBaseDelayMs: toNumberOrUndefined(env.TRENDSEARCH_RETRY_BASE_DELAY_MS),
+  retryMaxDelayMs: toNumberOrUndefined(env.TRENDSEARCH_RETRY_MAX_DELAY_MS),
+  maxConcurrent: toNumberOrUndefined(env.TRENDSEARCH_MAX_CONCURRENT),
+  minDelayMs: toNumberOrUndefined(env.TRENDSEARCH_MIN_DELAY_MS),
+  userAgent: env.TRENDSEARCH_USER_AGENT,
 });
 
 const readStored = (store: CliConfigStore): GlobalFlagOptions => ({

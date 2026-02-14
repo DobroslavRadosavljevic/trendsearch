@@ -117,7 +117,7 @@ const main = async (): Promise<void> => {
   }
 
   const tarballPath = join(repoRoot, tarballName);
-  const tempDir = await mkdtemp(join(tmpdir(), "gtrends-consumer-"));
+  const tempDir = await mkdtemp(join(tmpdir(), "trendsearch-consumer-"));
 
   try {
     await Bun.write(
@@ -173,7 +173,7 @@ const main = async (): Promise<void> => {
         [
           "--input-type=module",
           "-e",
-          `import { createRequire } from "node:module"; import { join, dirname } from "node:path"; import { spawnSync } from "node:child_process"; const require = createRequire(import.meta.url); const pkgPath = require.resolve(${JSON.stringify(`${packageName}/package.json`)}); const pkg = require(pkgPath); const binRel = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.gtrends; if (!binRel) throw new Error("Missing gtrends bin entry."); const binPath = join(dirname(pkgPath), binRel); const help = spawnSync(process.execPath, [binPath, "--help"], { encoding: "utf8" }); if (help.status !== 0) throw new Error("gtrends --help failed: " + (help.stderr || help.stdout)); if (!help.stdout.includes("Usage")) throw new Error("Expected usage output from gtrends --help.");`,
+          `import { createRequire } from "node:module"; import { join, dirname } from "node:path"; import { spawnSync } from "node:child_process"; const require = createRequire(import.meta.url); const pkgPath = require.resolve(${JSON.stringify(`${packageName}/package.json`)}); const pkg = require(pkgPath); const binRel = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.trendsearch; if (!binRel) throw new Error("Missing trendsearch bin entry."); const binPath = join(dirname(pkgPath), binRel); const help = spawnSync(process.execPath, [binPath, "--help"], { encoding: "utf8" }); if (help.status !== 0) throw new Error("trendsearch --help failed: " + (help.stderr || help.stdout)); if (!help.stdout.includes("Usage")) throw new Error("Expected usage output from trendsearch --help.");`,
         ],
         tempDir
       );
@@ -184,7 +184,7 @@ const main = async (): Promise<void> => {
         [
           "--input-type=module",
           "-e",
-          `import { createRequire } from "node:module"; import { join, dirname } from "node:path"; import { spawnSync } from "node:child_process"; const require = createRequire(import.meta.url); const pkgPath = require.resolve(${JSON.stringify(`${packageName}/package.json`)}); const pkg = require(pkgPath); const binRel = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.gtrends; if (!binRel) throw new Error("Missing gtrends bin entry."); const binPath = join(dirname(pkgPath), binRel); const result = spawnSync(process.execPath, [binPath, "autocomplete", "--input", ${JSON.stringify(cliInputPath)}, "--output", "json", "--no-spinner", "--base-url", "http://127.0.0.1:1", "--timeout-ms", "5", "--max-retries", "0"], { encoding: "utf8" }); if (result.status === 0) throw new Error("Expected transport failure for local mock endpoint."); const payload = JSON.parse(result.stdout || "{}"); if (payload.ok !== false) throw new Error("Expected JSON error envelope."); if (!payload.error || typeof payload.error.code !== "string") throw new Error("Missing structured error payload.");`,
+          `import { createRequire } from "node:module"; import { join, dirname } from "node:path"; import { spawnSync } from "node:child_process"; const require = createRequire(import.meta.url); const pkgPath = require.resolve(${JSON.stringify(`${packageName}/package.json`)}); const pkg = require(pkgPath); const binRel = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.trendsearch; if (!binRel) throw new Error("Missing trendsearch bin entry."); const binPath = join(dirname(pkgPath), binRel); const result = spawnSync(process.execPath, [binPath, "autocomplete", "--input", ${JSON.stringify(cliInputPath)}, "--output", "json", "--no-spinner", "--base-url", "http://127.0.0.1:1", "--timeout-ms", "5", "--max-retries", "0"], { encoding: "utf8" }); if (result.status === 0) throw new Error("Expected transport failure for local mock endpoint."); const payload = JSON.parse(result.stdout || "{}"); if (payload.ok !== false) throw new Error("Expected JSON error envelope."); if (!payload.error || typeof payload.error.code !== "string") throw new Error("Missing structured error payload.");`,
         ],
         tempDir
       );

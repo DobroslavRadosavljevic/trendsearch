@@ -27,7 +27,7 @@ bun run changeset
 
 Then follow the prompts:
 
-1. Select the package (`gtrends` in this starter).
+1. Select the package (`trendsearch` in this starter).
 2. Pick bump type (`patch`, `minor`, or `major`).
 3. Write a short summary of the change.
 

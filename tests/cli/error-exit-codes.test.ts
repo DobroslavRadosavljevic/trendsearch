@@ -16,7 +16,7 @@ describe("cli exit codes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "--output",
         "json",
@@ -61,7 +61,7 @@ describe("cli exit codes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "typescript",
         "--output",
@@ -100,7 +100,7 @@ describe("cli exit codes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "typescript",
         "--output",
@@ -139,7 +139,7 @@ describe("cli exit codes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "typescript",
         "--output",
@@ -177,7 +177,7 @@ describe("cli exit codes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "typescript",
         "--output",

@@ -34,7 +34,7 @@ export const runCli = async (options: RunCliOptions = {}): Promise<number> => {
   const configStore =
     options.configStore ??
     createCliConfigStore({
-      cwd: env.GTRENDS_CONFIG_DIR,
+      cwd: env.TRENDSEARCH_CONFIG_DIR,
     });
 
   const program = createProgram({

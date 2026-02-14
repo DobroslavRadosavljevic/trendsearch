@@ -1,6 +1,6 @@
 # Package Owner Guide
 
-This document is for package owners and maintainers of the gtrends package.
+This document is for package owners and maintainers of the trendsearch package.
 It explains the full operational flow for versioning, release, publishing, and
 incident handling.
 
@@ -94,7 +94,7 @@ bun run cli autocomplete typescript --output json
 
 ## CLI Operations
 
-The package ships a first-class `gtrends` binary (same npm package, no separate
+The package ships a first-class `trendsearch` binary (same npm package, no separate
 CLI package). Maintainer expectations:
 
 - Keep command wrappers aligned with all SDK endpoints.
@@ -107,9 +107,9 @@ CLI package). Maintainer expectations:
   - `6` schema/response drift
   - `1` unknown fallback
 - Keep spinner/diagnostics on stderr and machine payloads on stdout.
-- Keep completion command working (`gtrends completion bash|zsh|fish`).
+- Keep completion command working (`trendsearch completion bash|zsh|fish`).
 
-For isolated automation and tests, set `GTRENDS_CONFIG_DIR` to redirect
+For isolated automation and tests, set `TRENDSEARCH_CONFIG_DIR` to redirect
 persisted CLI config away from user defaults.
 
 ## Publishing and Provenance

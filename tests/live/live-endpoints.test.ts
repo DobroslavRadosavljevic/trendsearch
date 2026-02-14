@@ -6,7 +6,7 @@ import {
   createClient,
 } from "../../src";
 
-const runLive = process.env.GTRENDS_LIVE === "1";
+const runLive = process.env.TRENDSEARCH_LIVE === "1";
 const describeLive = runLive ? describe : describe.skip;
 
 const expectDefined = <T>(value: T | undefined, message: string): T => {

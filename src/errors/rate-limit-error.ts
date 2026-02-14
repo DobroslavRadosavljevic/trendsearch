@@ -1,6 +1,6 @@
-import { GTrendsError } from "./gtrends-error";
+import { TrendSearchError } from "./trendsearch-error";
 
-export class RateLimitError extends GTrendsError {
+export class RateLimitError extends TrendSearchError {
   public readonly url: string;
   public readonly status: number;
 

@@ -1,5 +1,5 @@
 ---
-"gtrends": minor
+"trendsearch": minor
 ---
 
 Stabilize live endpoint support and API surface:

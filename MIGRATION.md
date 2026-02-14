@@ -1,6 +1,6 @@
-# Migration Guide: `google-trends-api` -> `gtrends`
+# Migration Guide: `google-trends-api` -> `trendsearch`
 
-`gtrends` is a modern, ESM-only, strict-typed SDK with native `fetch` + Zod.
+`trendsearch` is a modern, ESM-only, strict-typed SDK with native `fetch` + Zod.
 
 ## Key Differences
 
@@ -13,7 +13,7 @@
 
 ## Method Mapping
 
-| `google-trends-api`                  | `gtrends`                                                         |
+| `google-trends-api`                  | `trendsearch`                                                     |
 | ------------------------------------ | ----------------------------------------------------------------- |
 | `autoComplete({ keyword })`          | `autocomplete({ keyword })`                                       |
 | `interestOverTime({ keyword, ... })` | `interestOverTime({ keywords: [keyword], ... })`                  |
@@ -75,7 +75,7 @@ const articles = await trendingArticles({
 `agent`/proxy/cookie usage migrates to `createClient` options:
 
 ```ts
-import { createClient, MemoryCookieStore } from "gtrends";
+import { createClient, MemoryCookieStore } from "trendsearch";
 
 const client = createClient({
   userAgent: "...",
@@ -102,7 +102,7 @@ import {
   EndpointUnavailableError,
   RateLimitError,
   SchemaValidationError,
-} from "gtrends";
+} from "trendsearch";
 
 try {
   await interestOverTime({ keywords: ["typescript"] });

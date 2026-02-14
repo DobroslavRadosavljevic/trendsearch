@@ -2,7 +2,7 @@ import type { z } from "zod";
 
 import type {
   EndpointDebugOptions,
-  GTrendsClient,
+  TrendSearchClient,
 } from "../client/public-types";
 
 import { pickerRequestSchema, schemas, type ArticleKey } from "../schemas";
@@ -21,7 +21,7 @@ export interface EndpointCommandDefinition {
   args: CliArgumentDefinition[];
   buildRequest: (ctx: BuildRequestContext) => unknown;
   invoke: (
-    client: GTrendsClient,
+    client: TrendSearchClient,
     request: unknown,
     debug: EndpointDebugOptions
   ) => Promise<unknown>;
@@ -274,7 +274,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     }),
     invoke: (client, request, debug) =>
       client.autocomplete(
-        asRequest<Parameters<GTrendsClient["autocomplete"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["autocomplete"]>[0]>(request),
         debug
       ),
   },
@@ -288,7 +288,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     buildRequest: buildExploreLikeRequest,
     invoke: (client, request, debug) =>
       client.explore(
-        asRequest<Parameters<GTrendsClient["explore"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["explore"]>[0]>(request),
         debug
       ),
   },
@@ -302,7 +302,9 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     buildRequest: buildExploreLikeRequest,
     invoke: (client, request, debug) =>
       client.interestOverTime(
-        asRequest<Parameters<GTrendsClient["interestOverTime"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["interestOverTime"]>[0]>(
+          request
+        ),
         debug
       ),
   },
@@ -328,7 +330,9 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     }),
     invoke: (client, request, debug) =>
       client.interestByRegion(
-        asRequest<Parameters<GTrendsClient["interestByRegion"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["interestByRegion"]>[0]>(
+          request
+        ),
         debug
       ),
   },
@@ -342,7 +346,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     buildRequest: buildExploreLikeRequest,
     invoke: (client, request, debug) =>
       client.relatedQueries(
-        asRequest<Parameters<GTrendsClient["relatedQueries"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["relatedQueries"]>[0]>(request),
         debug
       ),
   },
@@ -356,7 +360,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     buildRequest: buildExploreLikeRequest,
     invoke: (client, request, debug) =>
       client.relatedTopics(
-        asRequest<Parameters<GTrendsClient["relatedTopics"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["relatedTopics"]>[0]>(request),
         debug
       ),
   },
@@ -400,7 +404,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     }),
     invoke: (client, request, debug) =>
       client.dailyTrends(
-        asRequest<Parameters<GTrendsClient["dailyTrends"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["dailyTrends"]>[0]>(request),
         debug
       ),
   },
@@ -465,7 +469,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     }),
     invoke: (client, request, debug) =>
       client.realTimeTrends(
-        asRequest<Parameters<GTrendsClient["realTimeTrends"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["realTimeTrends"]>[0]>(request),
         debug
       ),
   },
@@ -502,7 +506,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     }),
     invoke: (client, request, debug) =>
       client.trendingNow(
-        asRequest<Parameters<GTrendsClient["trendingNow"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["trendingNow"]>[0]>(request),
         debug
       ),
   },
@@ -534,7 +538,9 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     }),
     invoke: (client, request, debug) =>
       client.trendingArticles(
-        asRequest<Parameters<GTrendsClient["trendingArticles"]>[0]>(request),
+        asRequest<Parameters<TrendSearchClient["trendingArticles"]>[0]>(
+          request
+        ),
         debug
       ),
   },
@@ -571,9 +577,9 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     }),
     invoke: (client, request, debug) =>
       client.experimental.trendingNow(
-        asRequest<Parameters<GTrendsClient["experimental"]["trendingNow"]>[0]>(
-          request
-        ),
+        asRequest<
+          Parameters<TrendSearchClient["experimental"]["trendingNow"]>[0]
+        >(request),
         debug
       ),
   },
@@ -606,7 +612,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     invoke: (client, request, debug) =>
       client.experimental.trendingArticles(
         asRequest<
-          Parameters<GTrendsClient["experimental"]["trendingArticles"]>[0]
+          Parameters<TrendSearchClient["experimental"]["trendingArticles"]>[0]
         >(request),
         debug
       ),
@@ -621,9 +627,9 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     buildRequest: () => ({}),
     invoke: (client, request, debug) =>
       client.experimental.geoPicker(
-        asRequest<Parameters<GTrendsClient["experimental"]["geoPicker"]>[0]>(
-          request
-        ),
+        asRequest<
+          Parameters<TrendSearchClient["experimental"]["geoPicker"]>[0]
+        >(request),
         debug
       ),
   },
@@ -638,7 +644,7 @@ export const endpointManifest: EndpointCommandDefinition[] = [
     invoke: (client, request, debug) =>
       client.experimental.categoryPicker(
         asRequest<
-          Parameters<GTrendsClient["experimental"]["categoryPicker"]>[0]
+          Parameters<TrendSearchClient["experimental"]["categoryPicker"]>[0]
         >(request),
         debug
       ),

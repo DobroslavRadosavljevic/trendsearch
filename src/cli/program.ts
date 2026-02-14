@@ -4,7 +4,10 @@ import { Command, Option } from "commander";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 
-import type { CreateClientConfig, GTrendsClient } from "../client/public-types";
+import type {
+  CreateClientConfig,
+  TrendSearchClient,
+} from "../client/public-types";
 
 import { createClient as defaultCreateClient } from "../client/create-client";
 import { completeWords, renderCompletionScript } from "./completion";
@@ -40,7 +43,7 @@ export interface CreateProgramOptions {
   env: Record<string, string | undefined>;
   configStore: CliConfigStore;
   stdin: NodeJS.ReadableStream;
-  createClient?: (config?: CreateClientConfig) => GTrendsClient;
+  createClient?: (config?: CreateClientConfig) => TrendSearchClient;
 }
 
 const toStringArray = (value: string, previous: string[]): string[] => [
@@ -271,7 +274,7 @@ const executeEndpointCommand = async (args: {
   env: Record<string, string | undefined>;
   configStore: CliConfigStore;
   stdin: NodeJS.ReadableStream;
-  createClient: (config?: CreateClientConfig) => GTrendsClient;
+  createClient: (config?: CreateClientConfig) => TrendSearchClient;
   forcedRequest?: unknown;
   forcedOutput?: "pretty" | "json" | "jsonl";
   forcedRaw?: boolean;
@@ -516,7 +519,7 @@ const configureEndpointCommands = (args: {
   env: Record<string, string | undefined>;
   configStore: CliConfigStore;
   stdin: NodeJS.ReadableStream;
-  createClient: (config?: CreateClientConfig) => GTrendsClient;
+  createClient: (config?: CreateClientConfig) => TrendSearchClient;
 }): void => {
   const groupCommands = new Map<string, Command>();
 
@@ -591,7 +594,7 @@ const configureWizardCommand = (args: {
   env: Record<string, string | undefined>;
   configStore: CliConfigStore;
   stdin: NodeJS.ReadableStream;
-  createClient: (config?: CreateClientConfig) => GTrendsClient;
+  createClient: (config?: CreateClientConfig) => TrendSearchClient;
 }): void => {
   const wizardCommand = args.program
     .command("wizard")
@@ -636,7 +639,7 @@ const configureCompletionCommands = (program: Command, io: CliIo): void => {
     .command("completion <shell>")
     .description("Generate shell completion script (bash|zsh|fish).")
     .action((shell: string) => {
-      const script = renderCompletionScript(shell, "gtrends");
+      const script = renderCompletionScript(shell, "trendsearch");
       if (!script) {
         throw new CliUsageError("Unsupported shell for completion.", {
           shell,
@@ -677,7 +680,7 @@ export const createProgram = (options: CreateProgramOptions): Command => {
   const program = new Command();
 
   program
-    .name("gtrends")
+    .name("trendsearch")
     .description("Google Trends SDK CLI for stable + experimental endpoints.")
     .version(options.env.npm_package_version ?? "0.0.0")
     .showHelpAfterError();

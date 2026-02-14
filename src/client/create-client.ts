@@ -1,6 +1,6 @@
 import type {
   CreateClientConfig,
-  GTrendsClient,
+  TrendSearchClient,
   RequestConfig,
 } from "./public-types";
 
@@ -59,7 +59,7 @@ const ensureFetch = (
 
 export const createClient = (
   config: CreateClientConfig = {}
-): GTrendsClient => {
+): TrendSearchClient => {
   const fetchFn = ensureFetch(config.fetch);
 
   const runtime = {

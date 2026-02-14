@@ -19,9 +19,9 @@ describe("cli config precedence", () => {
         output: "json",
       },
       env: {
-        GTRENDS_OUTPUT: "jsonl",
-        GTRENDS_SPINNER: "false",
-        GTRENDS_TIMEOUT_MS: "2000",
+        TRENDSEARCH_OUTPUT: "jsonl",
+        TRENDSEARCH_SPINNER: "false",
+        TRENDSEARCH_TIMEOUT_MS: "2000",
       },
       store,
       stdoutIsTty: true,
@@ -56,7 +56,7 @@ describe("cli config precedence", () => {
         retryMaxDelayMs: 500,
         maxConcurrent: 2,
         minDelayMs: 250,
-        userAgent: "gtrends-test",
+        userAgent: "trendsearch-test",
       },
       env: {},
       store: createMemoryStore(),
@@ -69,7 +69,7 @@ describe("cli config precedence", () => {
     expect(config.timeoutMs).toBe(800);
     expect(config.hl).toBe("en-US");
     expect(config.tz).toBe(120);
-    expect(config.userAgent).toBe("gtrends-test");
+    expect(config.userAgent).toBe("trendsearch-test");
     expect(config.retries?.maxRetries).toBe(3);
     expect(config.retries?.baseDelayMs).toBe(100);
     expect(config.retries?.maxDelayMs).toBe(500);

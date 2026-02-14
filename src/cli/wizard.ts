@@ -30,7 +30,7 @@ const parseJsonInput = (value: string): unknown => {
 export const runWizardPrompt = async (): Promise<
   WizardSelection | undefined
 > => {
-  intro("gtrends wizard");
+  intro("trendsearch wizard");
 
   const endpoint = await select({
     message: "Choose an endpoint",

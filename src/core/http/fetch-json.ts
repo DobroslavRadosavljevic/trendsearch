@@ -6,7 +6,7 @@ import type {
 } from "../../client/public-types";
 import type { RateLimiter } from "../resilience/rate-limiter";
 
-import { GTrendsError, RateLimitError, TransportError } from "../../errors";
+import { TrendSearchError, RateLimitError, TransportError } from "../../errors";
 import { runWithRetry } from "../resilience/retry";
 import { getSetCookieHeaders } from "../session/cookies";
 import { buildUrl } from "./build-url";
@@ -141,7 +141,7 @@ const requestOnce = async (args: {
 
     return text;
   } catch (error) {
-    if (error instanceof GTrendsError) {
+    if (error instanceof TrendSearchError) {
       throw error;
     }
 

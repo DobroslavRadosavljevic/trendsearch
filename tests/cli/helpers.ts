@@ -1,6 +1,6 @@
 import type { CliConfigStore } from "../../src/cli/config";
 import type { CliIo, WritableLike } from "../../src/cli/output";
-import type { GTrendsClient } from "../../src/client/public-types";
+import type { TrendSearchClient } from "../../src/client/public-types";
 
 export interface MemoryWritable extends WritableLike {
   read: () => string;
@@ -68,42 +68,46 @@ export const createMemoryStore = (
 
 export const createMockClient = (args: {
   onCall: (name: string, input: unknown) => Promise<unknown>;
-}): GTrendsClient => {
+}): TrendSearchClient => {
   const call =
     (name: string) =>
     async (input: unknown): Promise<unknown> =>
       args.onCall(name, input);
 
   return {
-    autocomplete: call("autocomplete") as GTrendsClient["autocomplete"],
-    explore: call("explore") as GTrendsClient["explore"],
+    autocomplete: call("autocomplete") as TrendSearchClient["autocomplete"],
+    explore: call("explore") as TrendSearchClient["explore"],
     interestOverTime: call(
       "interestOverTime"
-    ) as GTrendsClient["interestOverTime"],
+    ) as TrendSearchClient["interestOverTime"],
     interestByRegion: call(
       "interestByRegion"
-    ) as GTrendsClient["interestByRegion"],
-    relatedQueries: call("relatedQueries") as GTrendsClient["relatedQueries"],
-    relatedTopics: call("relatedTopics") as GTrendsClient["relatedTopics"],
-    dailyTrends: call("dailyTrends") as GTrendsClient["dailyTrends"],
-    realTimeTrends: call("realTimeTrends") as GTrendsClient["realTimeTrends"],
-    trendingNow: call("trendingNow") as GTrendsClient["trendingNow"],
+    ) as TrendSearchClient["interestByRegion"],
+    relatedQueries: call(
+      "relatedQueries"
+    ) as TrendSearchClient["relatedQueries"],
+    relatedTopics: call("relatedTopics") as TrendSearchClient["relatedTopics"],
+    dailyTrends: call("dailyTrends") as TrendSearchClient["dailyTrends"],
+    realTimeTrends: call(
+      "realTimeTrends"
+    ) as TrendSearchClient["realTimeTrends"],
+    trendingNow: call("trendingNow") as TrendSearchClient["trendingNow"],
     trendingArticles: call(
       "trendingArticles"
-    ) as GTrendsClient["trendingArticles"],
+    ) as TrendSearchClient["trendingArticles"],
     experimental: {
       trendingNow: call(
         "experimental.trendingNow"
-      ) as GTrendsClient["experimental"]["trendingNow"],
+      ) as TrendSearchClient["experimental"]["trendingNow"],
       trendingArticles: call(
         "experimental.trendingArticles"
-      ) as GTrendsClient["experimental"]["trendingArticles"],
+      ) as TrendSearchClient["experimental"]["trendingArticles"],
       geoPicker: call(
         "experimental.geoPicker"
-      ) as GTrendsClient["experimental"]["geoPicker"],
+      ) as TrendSearchClient["experimental"]["geoPicker"],
       categoryPicker: call(
         "experimental.categoryPicker"
-      ) as GTrendsClient["experimental"]["categoryPicker"],
+      ) as TrendSearchClient["experimental"]["categoryPicker"],
     },
   };
 };

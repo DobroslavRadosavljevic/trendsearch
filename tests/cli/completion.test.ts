@@ -39,16 +39,16 @@ describe("cli completion", () => {
   });
 
   it("renders completion scripts for bash/zsh/fish", () => {
-    const bash = renderCompletionScript("bash", "gtrends");
-    const zsh = renderCompletionScript("zsh", "gtrends");
-    const fish = renderCompletionScript("fish", "gtrends");
+    const bash = renderCompletionScript("bash", "trendsearch");
+    const zsh = renderCompletionScript("zsh", "trendsearch");
+    const fish = renderCompletionScript("fish", "trendsearch");
 
-    expect(bash).toContain("gtrends __complete");
-    expect(zsh).toContain("gtrends __complete");
-    expect(fish).toContain("gtrends __complete");
+    expect(bash).toContain("trendsearch __complete");
+    expect(zsh).toContain("trendsearch __complete");
+    expect(fish).toContain("trendsearch __complete");
   });
 
   it("returns undefined for unsupported shell", () => {
-    expect(renderCompletionScript("powershell", "gtrends")).toBeUndefined();
+    expect(renderCompletionScript("powershell", "trendsearch")).toBeUndefined();
   });
 });

@@ -1,6 +1,6 @@
-# Getting Started: gtrends
+# Getting Started: trendsearch
 
-This guide covers local development and release workflow for the `gtrends` package.
+This guide covers local development and release workflow for the `trendsearch` package.
 
 ## 1. Install
 
@@ -21,7 +21,7 @@ bun run test:all
 Optional live suite (real Google endpoints):
 
 ```bash
-GTRENDS_LIVE=1 bun run test:live
+TRENDSEARCH_LIVE=1 bun run test:live
 ```
 
 Live suite covers:
@@ -39,9 +39,9 @@ bun run cli autocomplete typescript --output json
 
 CLI supports all endpoint wrappers plus:
 
-- `gtrends config *`
-- `gtrends wizard`
-- `gtrends completion <bash|zsh|fish>`
+- `trendsearch config *`
+- `trendsearch wizard`
+- `trendsearch completion <bash|zsh|fish>`
 
 ## 4. Run Full Quality Gate
 

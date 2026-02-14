@@ -95,7 +95,7 @@ describe("cli command mapping", () => {
       const exitCode = await runCli({
         argv: [
           "node",
-          "gtrends",
+          "trendsearch",
           ...scenario.args,
           "--output",
           "json",

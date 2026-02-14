@@ -1,6 +1,6 @@
-import { GTrendsError } from "./gtrends-error";
+import { TrendSearchError } from "./trendsearch-error";
 
-export class UnexpectedResponseError extends GTrendsError {
+export class UnexpectedResponseError extends TrendSearchError {
   public readonly endpoint: string;
 
   constructor(args: { endpoint: string; message: string }) {

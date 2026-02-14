@@ -3,12 +3,12 @@ import { createClient } from "./client/create-client";
 export {
   type CreateClientConfig,
   type EndpointDebugOptions,
-  type GTrendsClient,
+  type TrendSearchClient,
 } from "./client/public-types";
 export { MemoryCookieStore } from "./core/session/cookies";
 export {
   EndpointUnavailableError,
-  GTrendsError,
+  TrendSearchError,
   RateLimitError,
   SchemaValidationError,
   TransportError,

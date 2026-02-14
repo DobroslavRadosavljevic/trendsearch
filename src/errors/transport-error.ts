@@ -1,6 +1,6 @@
-import { GTrendsError } from "./gtrends-error";
+import { TrendSearchError } from "./trendsearch-error";
 
-export class TransportError extends GTrendsError {
+export class TransportError extends TrendSearchError {
   public readonly status?: number;
   public readonly url: string;
   public readonly responseBody?: string;

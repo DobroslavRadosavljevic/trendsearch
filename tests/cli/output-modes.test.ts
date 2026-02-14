@@ -16,7 +16,13 @@ describe("cli output modes", () => {
     });
 
     const exitCode = await runCli({
-      argv: ["node", "gtrends", "autocomplete", "typescript", "--no-spinner"],
+      argv: [
+        "node",
+        "trendsearch",
+        "autocomplete",
+        "typescript",
+        "--no-spinner",
+      ],
       io,
       env: {},
       configStore: store,
@@ -54,7 +60,7 @@ describe("cli output modes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "typescript",
         "--output",
@@ -94,7 +100,7 @@ describe("cli output modes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "typescript",
         "--output",
@@ -131,7 +137,7 @@ describe("cli output modes", () => {
     const exitCode = await runCli({
       argv: [
         "node",
-        "gtrends",
+        "trendsearch",
         "autocomplete",
         "typescript",
         "--output",

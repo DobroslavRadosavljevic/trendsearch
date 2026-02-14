@@ -1,6 +1,6 @@
-import { GTrendsError } from "./gtrends-error";
+import { TrendSearchError } from "./trendsearch-error";
 
-export class EndpointUnavailableError extends GTrendsError {
+export class EndpointUnavailableError extends TrendSearchError {
   public readonly endpoint: string;
   public readonly status?: number;
   public readonly replacements: string[];

@@ -1,6 +1,6 @@
-import { GTrendsError } from "./gtrends-error";
+import { TrendSearchError } from "./trendsearch-error";
 
-export class SchemaValidationError extends GTrendsError {
+export class SchemaValidationError extends TrendSearchError {
   public readonly endpoint: string;
   public readonly issues: string[];
 
