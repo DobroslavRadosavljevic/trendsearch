@@ -146,7 +146,7 @@ const main = async (): Promise<void> => {
         [
           "--input-type=module",
           "-e",
-          `const mod = await import(${JSON.stringify(packageName)}); if (typeof mod.getTrends !== "function") throw new Error("Expected 'getTrends' export to be a function.");`,
+          `const mod = await import(${JSON.stringify(packageName)}); const required = ["createClient","autocomplete","explore","interestOverTime","interestByRegion","relatedQueries","relatedTopics","dailyTrends","realTimeTrends","trendingNow","trendingArticles","experimental","schemas","EndpointUnavailableError"]; for (const key of required) { if (!(key in mod)) throw new Error("Missing export: " + key); } if (typeof mod.createClient !== "function") throw new Error("Expected 'createClient' export to be a function.");`,
         ],
         tempDir
       );
