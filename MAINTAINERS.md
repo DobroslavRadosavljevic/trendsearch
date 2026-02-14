@@ -1,14 +1,14 @@
 # Package Owner Guide
 
-This document is for package owners and maintainers of this starter repository.
+This document is for package owners and maintainers of the gtrends package.
 It explains the full operational flow for versioning, release, publishing, and
 incident handling.
 
 For a beginner-first walkthrough, see `GETTING_STARTED.md`.
 
-## What This Template Optimizes For
+## What This Package Optimizes For
 
-- Single-package TypeScript libraries
+- Google Trends API fetching library (TypeScript)
 - ESM-only package contract
 - Bun-first development and CI tasks
 - Changesets-managed versioning and changelog updates

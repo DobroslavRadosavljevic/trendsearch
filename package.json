@@ -1,21 +1,23 @@
 {
-  "name": "npm-ts-start",
+  "name": "gtrends",
   "version": "0.0.1",
-  "description": "A starter for creating a TypeScript npm package.",
+  "description": "Google Trends API fetching library for Node.js and Bun.",
   "keywords": [
-    "npm",
-    "package",
+    "api",
+    "fetch",
+    "google",
+    "trends",
     "typescript"
   ],
-  "homepage": "https://github.com/your-org/your-package#readme",
+  "homepage": "https://github.com/DobroslavRadosavljevic/gtrends#readme",
   "bugs": {
-    "url": "https://github.com/your-org/your-package/issues"
+    "url": "https://github.com/DobroslavRadosavljevic/gtrends/issues"
   },
   "license": "MIT",
-  "author": "Your Name <you@example.com>",
+  "author": "Dobroslav Radosavljevic",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-org/your-package.git"
+    "url": "git+https://github.com/DobroslavRadosavljevic/gtrends.git"
   },
   "files": [
     "dist"

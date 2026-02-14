@@ -1,9 +1,10 @@
 import { describe, expect, it } from "bun:test";
 
-import { fn } from "../src";
+import { getTrends } from "../src";
 
-describe("index", () => {
-  it("should return 'Hello, tsdown!'", () => {
-    expect(fn()).toBe("Hello, tsdown!");
+describe("getTrends", () => {
+  it("returns trends data for keyword", async () => {
+    const result = await getTrends({ keyword: "typescript" });
+    expect(result).toEqual({ keyword: "typescript", data: [] });
   });
 });

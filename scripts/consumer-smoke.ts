@@ -117,7 +117,7 @@ const main = async (): Promise<void> => {
   }
 
   const tarballPath = join(repoRoot, tarballName);
-  const tempDir = await mkdtemp(join(tmpdir(), "npm-ts-start-consumer-"));
+  const tempDir = await mkdtemp(join(tmpdir(), "gtrends-consumer-"));
 
   try {
     await Bun.write(
@@ -146,7 +146,7 @@ const main = async (): Promise<void> => {
         [
           "--input-type=module",
           "-e",
-          `const mod = await import(${JSON.stringify(packageName)}); if (typeof mod.fn !== "function") throw new Error("Expected 'fn' export to be a function.");`,
+          `const mod = await import(${JSON.stringify(packageName)}); if (typeof mod.getTrends !== "function") throw new Error("Expected 'getTrends' export to be a function.");`,
         ],
         tempDir
       );

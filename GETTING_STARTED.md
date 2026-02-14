@@ -1,6 +1,6 @@
-# Getting Started: From Template to Published Package
+# Getting Started: gtrends Package
 
-This guide is for someone creating a brand new package from this template.
+This guide is for setting up and publishing the gtrends (Google Trends API) package.
 Follow it top to bottom.
 
 ## 1. Create Your Own Repository
@@ -10,8 +10,8 @@ Follow it top to bottom.
 3. Clone your new repo locally:
 
 ```bash
-git clone https://github.com/<your-user-or-org>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/DobroslavRadosavljevic/gtrends.git
+cd gtrends
 ```
 
 ## 2. Install and Personalize

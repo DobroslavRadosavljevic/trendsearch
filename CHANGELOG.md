@@ -9,5 +9,5 @@ manage versioning and changelog entries.
 
 ### Added
 
-- Initial `npm-ts-start` release.
+- Initial `gtrends` release.
 - ESM-only TypeScript package starter with Bun-first tooling.
