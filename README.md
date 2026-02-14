@@ -16,11 +16,40 @@ Modern Google Trends SDK for Node.js and Bun, built with native `fetch`, strict 
 
 ## 📦 Install
 
+### Install as a library dependency
+
 ```bash
 bun add trendsearch
-# or
 npm install trendsearch
+pnpm add trendsearch
+yarn add trendsearch
 ```
+
+### Run the CLI without installing globally (always latest)
+
+```bash
+npx trendsearch@latest --help
+pnpm dlx trendsearch@latest --help
+yarn dlx trendsearch@latest --help
+bunx trendsearch@latest --help
+```
+
+### Install the CLI globally (`@latest`)
+
+Use `@latest` so your global binary is always installed from the newest published version.
+
+```bash
+npm install --global trendsearch@latest
+pnpm add --global trendsearch@latest
+bun add --global trendsearch@latest
+yarn global add trendsearch@latest
+```
+
+For Yarn Berry/Modern, prefer `yarn dlx trendsearch@latest` (shown above) instead of global install.
+
+### Update an existing global install to latest
+
+Re-run your package manager's global install command with `@latest`.
 
 ## ✅ Runtime Contract
 
@@ -35,7 +64,9 @@ If you are in a CJS project, use dynamic import:
 const trendsearch = await import("trendsearch");
 ```
 
-## 🚀 Quick Start
+## 🚀 Library Usage Guide
+
+### 1) Quick start with endpoint helpers
 
 ```ts
 import { interestOverTime } from "trendsearch";
@@ -49,15 +80,68 @@ const result = await interestOverTime({
 console.log(result.data.timeline.length);
 ```
 
-## 🖥️ CLI
+### 2) Reuse shared defaults with `createClient`
+
+```ts
+import { createClient } from "trendsearch";
+
+const client = createClient({
+  hl: "en-US",
+  tz: 0,
+  timeoutMs: 15_000,
+});
+
+const result = await client.relatedQueries({
+  keywords: ["typescript"],
+  geo: "US",
+});
+
+console.log(result.data.top.length);
+```
+
+### 3) Use exported schemas/types when you need stricter boundaries
+
+```ts
+import { schemas, type ExploreRequest } from "trendsearch";
+
+const request: ExploreRequest = {
+  keywords: ["typescript", "javascript"],
+  geo: "US",
+};
+
+const validated = schemas.exploreRequestSchema.parse(request);
+```
+
+## 🖥️ CLI Usage Guide
 
 `trendsearch` ships with a production-ready CLI that wraps all stable and
 experimental endpoints.
 
+### 1) Start with help
+
+```bash
+trendsearch --help
+trendsearch explore --help
+```
+
+### 2) Run common endpoint commands
+
 ```bash
 trendsearch autocomplete typescript --output json
 trendsearch explore typescript --geo US --time "today 3-m" --output pretty
+trendsearch interest-over-time typescript --geo US --time "today 3-m"
+trendsearch related-queries typescript --geo US --time "today 12-m"
 trendsearch experimental trending-now --geo US --language en --hours 24
+```
+
+### 3) Pass request payloads with `--input`
+
+`--input` accepts inline JSON, a JSON file path, or `-` for stdin.
+
+```bash
+trendsearch explore --input '{"keywords":["typescript"],"geo":"US"}' --output json
+trendsearch explore --input ./requests/explore.json --output json
+cat ./requests/explore.json | trendsearch explore --input - --output json
 ```
 
 ### CLI Output Modes
@@ -97,13 +181,17 @@ Error envelope (`json`/`jsonl`):
 }
 ```
 
-### CLI Config / Wizard / Completion
+### 4) Persist defaults, use wizard, and generate completion
 
 ```bash
 trendsearch config set output json
+trendsearch config set hl en-US
+trendsearch config get output
 trendsearch config list
+trendsearch config unset hl
+trendsearch config reset
 trendsearch wizard
-trendsearch completion bash
+trendsearch completion zsh
 ```
 
 Config precedence:
@@ -113,6 +201,7 @@ Config precedence:
 Supported env vars include:
 
 - `TRENDSEARCH_OUTPUT`
+- `TRENDSEARCH_SPINNER`
 - `TRENDSEARCH_HL`
 - `TRENDSEARCH_TZ`
 - `TRENDSEARCH_BASE_URL`
@@ -123,6 +212,7 @@ Supported env vars include:
 - `TRENDSEARCH_MAX_CONCURRENT`
 - `TRENDSEARCH_MIN_DELAY_MS`
 - `TRENDSEARCH_USER_AGENT`
+- `TRENDSEARCH_CONFIG_DIR` (override where persisted CLI config is stored)
 
 ## 🧭 API Surface
 
