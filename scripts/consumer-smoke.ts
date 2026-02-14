@@ -1,0 +1,181 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+
+interface RunResult {
+  stdout: string;
+  stderr: string;
+}
+
+interface PackageManifest {
+  name?: string;
+}
+
+interface NpmPackEntry {
+  filename?: string;
+}
+
+const repoRoot = resolve(import.meta.dir, "..");
+
+const readOutput = async (
+  stream: ReadableStream<Uint8Array> | number | undefined | null
+): Promise<string> => {
+  if (typeof stream === "number" || stream === null || stream === undefined) {
+    return "";
+  }
+
+  return new Response(stream).text();
+};
+
+const run = async (
+  cmd: string,
+  args: string[],
+  cwd: string
+): Promise<RunResult> => {
+  const proc = Bun.spawn([cmd, ...args], {
+    cwd,
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  const [stdout, stderr, exitCode] = await Promise.all([
+    readOutput(proc.stdout),
+    readOutput(proc.stderr),
+    proc.exited,
+  ]);
+
+  if (exitCode !== 0) {
+    throw new Error(
+      `Command failed (${cmd} ${args.join(" ")}): ${stderr || stdout || `exit code ${exitCode}`}`
+    );
+  }
+
+  return { stdout, stderr };
+};
+
+const commandExists = (command: string): boolean => Bun.which(command) !== null;
+
+type NpmCommand = [string, ...string[]];
+
+const getNpmCommand = async (): Promise<NpmCommand> => {
+  if (commandExists("npm")) {
+    return ["npm"];
+  }
+
+  if (commandExists("bunx")) {
+    return ["bunx", "--bun", "npm"];
+  }
+
+  throw new Error(
+    "Unable to find npm. Install Node.js/npm, or install Bun so `bunx --bun npm` is available."
+  );
+};
+
+const runNpm = async (
+  npmCommand: NpmCommand,
+  args: string[],
+  cwd: string
+): Promise<RunResult> => {
+  const [command, ...prefixArgs] = npmCommand;
+  return run(command, [...prefixArgs, ...args], cwd);
+};
+
+const supportedNodeMajors = [20, 22, 24];
+
+const runWithNodeMajor = (
+  npmCommand: NpmCommand,
+  nodeMajor: number,
+  nodeArgs: string[],
+  cwd: string
+) =>
+  runNpm(
+    npmCommand,
+    ["exec", "--yes", `--package=node@${nodeMajor}`, "--", "node", ...nodeArgs],
+    cwd
+  );
+
+const main = async (): Promise<void> => {
+  const packageJsonPath = join(repoRoot, "package.json");
+  const packageJson = (await Bun.file(
+    packageJsonPath
+  ).json()) as PackageManifest;
+  const packageName = packageJson.name;
+
+  if (!packageName) {
+    throw new Error("package.json is missing a package name.");
+  }
+
+  const npmCommand = await getNpmCommand();
+  const packResult = await runNpm(npmCommand, ["pack", "--json"], repoRoot);
+  const packOutput = JSON.parse(packResult.stdout) as NpmPackEntry[];
+  const tarballName = packOutput?.[0]?.filename;
+
+  if (!tarballName) {
+    throw new Error(
+      "Could not determine tarball filename from `npm pack --json` output."
+    );
+  }
+
+  const tarballPath = join(repoRoot, tarballName);
+  const tempDir = await mkdtemp(join(tmpdir(), "npm-ts-start-consumer-"));
+
+  try {
+    await Bun.write(
+      join(tempDir, "package.json"),
+      JSON.stringify(
+        {
+          name: "consumer-smoke",
+          private: true,
+          type: "commonjs",
+        },
+        null,
+        2
+      )
+    );
+
+    await runNpm(
+      npmCommand,
+      ["install", "--no-audit", "--no-fund", tarballPath],
+      tempDir
+    );
+
+    for (const nodeMajor of supportedNodeMajors) {
+      await runWithNodeMajor(
+        npmCommand,
+        nodeMajor,
+        [
+          "--input-type=module",
+          "-e",
+          `const mod = await import(${JSON.stringify(packageName)}); if (typeof mod.fn !== "function") throw new Error("Expected 'fn' export to be a function.");`,
+        ],
+        tempDir
+      );
+
+      await runWithNodeMajor(
+        npmCommand,
+        nodeMajor,
+        [
+          "-e",
+          `try { require(${JSON.stringify(packageName)}); throw new Error("Expected require() to fail for ESM-only package."); } catch (error) { const allowed = new Set(["ERR_REQUIRE_ESM", "ERR_PACKAGE_PATH_NOT_EXPORTED"]); if (!allowed.has(error?.code)) throw error; }`,
+        ],
+        tempDir
+      );
+    }
+
+    console.log("Consumer smoke test passed.");
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+    try {
+      await Bun.file(tarballPath).delete();
+    } catch {
+      // Ignore cleanup errors for the temporary tarball.
+    }
+  }
+};
+
+try {
+  await main();
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+}
