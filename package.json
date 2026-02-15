@@ -1,6 +1,6 @@
 {
   "name": "trendsearch",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Google Trends API fetching library for Node.js and Bun.",
   "keywords": [
     "api",
