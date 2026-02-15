@@ -27,6 +27,14 @@ describe("cli completion", () => {
     expect(suggestions).toContain("trending-articles");
     expect(suggestions).toContain("geo-picker");
     expect(suggestions).toContain("category-picker");
+    expect(suggestions).toContain("top-charts");
+    expect(suggestions).toContain("interest-over-time-multirange");
+    expect(suggestions).toContain("interest-over-time-csv");
+    expect(suggestions).toContain("interest-over-time-multirange-csv");
+    expect(suggestions).toContain("interest-by-region-csv");
+    expect(suggestions).toContain("related-queries-csv");
+    expect(suggestions).toContain("related-topics-csv");
+    expect(suggestions).toContain("hot-trends-legacy");
   });
 
   it("returns flag suggestions for a resolved command", () => {

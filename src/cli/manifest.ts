@@ -203,6 +203,30 @@ const readNumber = (value: unknown): number | undefined => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
+const readDateLike = (value: unknown): number | string | undefined => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return undefined;
+  }
+
+  if (/^\d+$/.test(trimmed)) {
+    const parsed = Number(trimmed);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return trimmed;
+};
+
 const asRequest = <T>(value: unknown): T => value as T;
 
 const readString = (value: unknown): string | undefined =>
@@ -541,6 +565,177 @@ export const endpointManifest: EndpointCommandDefinition[] = [
         asRequest<Parameters<TrendSearchClient["trendingArticles"]>[0]>(
           request
         ),
+        debug
+      ),
+  },
+  {
+    id: "experimental.topCharts",
+    path: ["experimental", "top-charts"],
+    summary: "Fetch experimental top charts data.",
+    requestSchema: schemas.topChartsRequestSchema,
+    options: [
+      {
+        key: "geo",
+        flags: "--geo <geo>",
+        description: "Geo code.",
+        type: "string",
+      },
+      {
+        key: "date",
+        flags: "--date <date>",
+        description: "Date or year.",
+        type: "string",
+      },
+      {
+        key: "isMobile",
+        flags: "--is-mobile",
+        description: "Enable mobile mode.",
+        type: "boolean",
+      },
+    ],
+    args: [],
+    buildRequest: (ctx) => ({
+      geo: readString(ctx.options.geo),
+      date: readDateLike(ctx.options.date),
+      isMobile: ctx.options.isMobile === true ? true : undefined,
+    }),
+    invoke: (client, request, debug) =>
+      client.experimental.topCharts(
+        asRequest<
+          Parameters<TrendSearchClient["experimental"]["topCharts"]>[0]
+        >(request),
+        debug
+      ),
+  },
+  {
+    id: "experimental.interestOverTimeMultirange",
+    path: ["experimental", "interest-over-time-multirange"],
+    summary: "Fetch experimental interest over time (multirange).",
+    requestSchema: schemas.interestOverTimeMultirangeRequestSchema,
+    options: exploreLikeOptions,
+    args: [{ label: "[keywords...]", description: "Keyword list." }],
+    buildRequest: buildExploreLikeRequest,
+    invoke: (client, request, debug) =>
+      client.experimental.interestOverTimeMultirange(
+        asRequest<
+          Parameters<
+            TrendSearchClient["experimental"]["interestOverTimeMultirange"]
+          >[0]
+        >(request),
+        debug
+      ),
+  },
+  {
+    id: "experimental.interestOverTimeCsv",
+    path: ["experimental", "interest-over-time-csv"],
+    summary: "Fetch experimental interest over time CSV.",
+    requestSchema: schemas.interestOverTimeRequestSchema,
+    options: exploreLikeOptions,
+    args: [{ label: "[keywords...]", description: "Keyword list." }],
+    buildRequest: buildExploreLikeRequest,
+    invoke: (client, request, debug) =>
+      client.experimental.interestOverTimeCsv(
+        asRequest<
+          Parameters<
+            TrendSearchClient["experimental"]["interestOverTimeCsv"]
+          >[0]
+        >(request),
+        debug
+      ),
+  },
+  {
+    id: "experimental.interestOverTimeMultirangeCsv",
+    path: ["experimental", "interest-over-time-multirange-csv"],
+    summary: "Fetch experimental interest over time multirange CSV.",
+    requestSchema: schemas.interestOverTimeMultirangeRequestSchema,
+    options: exploreLikeOptions,
+    args: [{ label: "[keywords...]", description: "Keyword list." }],
+    buildRequest: buildExploreLikeRequest,
+    invoke: (client, request, debug) =>
+      client.experimental.interestOverTimeMultirangeCsv(
+        asRequest<
+          Parameters<
+            TrendSearchClient["experimental"]["interestOverTimeMultirangeCsv"]
+          >[0]
+        >(request),
+        debug
+      ),
+  },
+  {
+    id: "experimental.interestByRegionCsv",
+    path: ["experimental", "interest-by-region-csv"],
+    summary: "Fetch experimental interest by region CSV.",
+    requestSchema: schemas.interestByRegionRequestSchema,
+    options: [
+      ...exploreLikeOptions,
+      {
+        key: "resolution",
+        flags: "--resolution <resolution>",
+        description: "Geo resolution (COUNTRY, REGION, CITY, DMA).",
+        type: "string",
+        choices: ["COUNTRY", "REGION", "CITY", "DMA"],
+      },
+    ],
+    args: [{ label: "[keywords...]", description: "Keyword list." }],
+    buildRequest: (ctx) => ({
+      ...(buildExploreLikeRequest(ctx) as Record<string, unknown>),
+      resolution: readString(ctx.options.resolution),
+    }),
+    invoke: (client, request, debug) =>
+      client.experimental.interestByRegionCsv(
+        asRequest<
+          Parameters<
+            TrendSearchClient["experimental"]["interestByRegionCsv"]
+          >[0]
+        >(request),
+        debug
+      ),
+  },
+  {
+    id: "experimental.relatedQueriesCsv",
+    path: ["experimental", "related-queries-csv"],
+    summary: "Fetch experimental related queries CSV.",
+    requestSchema: schemas.relatedQueriesRequestSchema,
+    options: exploreLikeOptions,
+    args: [{ label: "[keywords...]", description: "Keyword list." }],
+    buildRequest: buildExploreLikeRequest,
+    invoke: (client, request, debug) =>
+      client.experimental.relatedQueriesCsv(
+        asRequest<
+          Parameters<TrendSearchClient["experimental"]["relatedQueriesCsv"]>[0]
+        >(request),
+        debug
+      ),
+  },
+  {
+    id: "experimental.relatedTopicsCsv",
+    path: ["experimental", "related-topics-csv"],
+    summary: "Fetch experimental related topics CSV.",
+    requestSchema: schemas.relatedTopicsRequestSchema,
+    options: exploreLikeOptions,
+    args: [{ label: "[keywords...]", description: "Keyword list." }],
+    buildRequest: buildExploreLikeRequest,
+    invoke: (client, request, debug) =>
+      client.experimental.relatedTopicsCsv(
+        asRequest<
+          Parameters<TrendSearchClient["experimental"]["relatedTopicsCsv"]>[0]
+        >(request),
+        debug
+      ),
+  },
+  {
+    id: "experimental.hotTrendsLegacy",
+    path: ["experimental", "hot-trends-legacy"],
+    summary: "Fetch legacy hot trends endpoint payload.",
+    requestSchema: schemas.hotTrendsLegacyRequestSchema,
+    options: [],
+    args: [],
+    buildRequest: () => ({}),
+    invoke: (client, request, debug) =>
+      client.experimental.hotTrendsLegacy(
+        asRequest<
+          Parameters<TrendSearchClient["experimental"]["hotTrendsLegacy"]>[0]
+        >(request),
         debug
       ),
   },

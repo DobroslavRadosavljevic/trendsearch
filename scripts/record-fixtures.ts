@@ -138,6 +138,123 @@ const main = async (): Promise<void> => {
   await writeJson("category-picker/ok.json", categoryPicker.raw);
   await pause();
 
+  const topCharts = await client.experimental.topCharts(
+    {
+      geo: "GLOBAL",
+      date: new Date().getUTCFullYear(),
+    },
+    { debugRawResponse: true }
+  );
+  await writeJson("top-charts/ok.json", topCharts.raw);
+  await pause();
+
+  const multirange = await client.experimental.interestOverTimeMultirange(
+    { keywords: ["typescript"], geo: "US", time: "today 3-m" },
+    { debugRawResponse: true }
+  );
+  await writeJson("interest-over-time-multirange/ok.json", multirange.raw);
+  await pause();
+
+  const writeCsvFixture = async (args: {
+    endpoint:
+      | "interestOverTimeCsv"
+      | "interestOverTimeMultirangeCsv"
+      | "interestByRegionCsv"
+      | "relatedQueriesCsv"
+      | "relatedTopicsCsv";
+    filename: string;
+    task: () => Promise<{ raw?: unknown }>;
+  }): Promise<void> => {
+    try {
+      const result = await args.task();
+      if (typeof result.raw === "string") {
+        await writeText(`csv/${args.filename}`, result.raw);
+      }
+    } catch (error) {
+      if (
+        error instanceof EndpointUnavailableError ||
+        (error instanceof Error && error.message.includes("HTTP 401"))
+      ) {
+        console.warn(
+          `Skipping ${args.endpoint} fixture: endpoint unavailable.`
+        );
+      } else {
+        throw error;
+      }
+    }
+    await pause();
+  };
+
+  await writeCsvFixture({
+    endpoint: "interestOverTimeCsv",
+    filename: "interest-over-time.csv",
+    task: () =>
+      client.experimental.interestOverTimeCsv(
+        { keywords: ["typescript"], geo: "US", time: "today 3-m" },
+        { debugRawResponse: true }
+      ),
+  });
+
+  await writeCsvFixture({
+    endpoint: "interestOverTimeMultirangeCsv",
+    filename: "interest-over-time-multirange.csv",
+    task: () =>
+      client.experimental.interestOverTimeMultirangeCsv(
+        { keywords: ["typescript"], geo: "US", time: "today 3-m" },
+        { debugRawResponse: true }
+      ),
+  });
+
+  await writeCsvFixture({
+    endpoint: "interestByRegionCsv",
+    filename: "interest-by-region.csv",
+    task: () =>
+      client.experimental.interestByRegionCsv(
+        { keywords: ["typescript"], geo: "US", resolution: "REGION" },
+        { debugRawResponse: true }
+      ),
+  });
+
+  await writeCsvFixture({
+    endpoint: "relatedQueriesCsv",
+    filename: "related-queries.csv",
+    task: () =>
+      client.experimental.relatedQueriesCsv(
+        { keywords: ["typescript"], geo: "US", time: "today 3-m" },
+        { debugRawResponse: true }
+      ),
+  });
+
+  await writeCsvFixture({
+    endpoint: "relatedTopicsCsv",
+    filename: "related-topics.csv",
+    task: () =>
+      client.experimental.relatedTopicsCsv(
+        { keywords: ["typescript"], geo: "US", time: "today 3-m" },
+        { debugRawResponse: true }
+      ),
+  });
+
+  try {
+    const hotTrendsLegacy = await client.experimental.hotTrendsLegacy(
+      {},
+      { debugRawResponse: true }
+    );
+    await writeJson("hot-trends-legacy/ok.json", hotTrendsLegacy.raw);
+    await pause();
+  } catch (error) {
+    if (
+      error instanceof EndpointUnavailableError ||
+      (error instanceof Error &&
+        (error.message.includes("HTTP 401") ||
+          error.message.includes("HTTP 404")))
+    ) {
+      console.warn("Skipping hot-trends-legacy fixture: endpoint unavailable.");
+    } else {
+      throw error;
+    }
+  }
+
   const trendingNowText = await fetchRpcText({
     rpcId: "i0OFE",
     payload: '[null,null,"US",0,"en",24,1]',

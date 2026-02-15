@@ -127,6 +127,48 @@ describe("stable endpoint contracts", () => {
     expect(typeof result.data.rising[0]?.value).toBe("string");
   });
 
+  it("accepts empty related query lists", async () => {
+    const ctx = createMockContext({
+      jsonByEndpoint: {
+        explore: await fixtureJson("explore", "ok.json"),
+        relatedQueries: {
+          default: {
+            rankedList: [],
+          },
+        },
+      },
+    });
+
+    const result = await relatedQueriesEndpoint(ctx, {
+      keywords: ["typescript"],
+      geo: "US",
+    });
+
+    expect(result.data.top).toEqual([]);
+    expect(result.data.rising).toEqual([]);
+  });
+
+  it("accepts empty related topic lists", async () => {
+    const ctx = createMockContext({
+      jsonByEndpoint: {
+        explore: await fixtureJson("explore", "ok.json"),
+        relatedTopics: {
+          default: {
+            rankedList: [],
+          },
+        },
+      },
+    });
+
+    const result = await relatedTopicsEndpoint(ctx, {
+      keywords: ["typescript"],
+      geo: "US",
+    });
+
+    expect(result.data.top).toEqual([]);
+    expect(result.data.rising).toEqual([]);
+  });
+
   it("parses daily trends", async () => {
     const ctx = createMockContext({
       jsonByEndpoint: {

@@ -98,6 +98,11 @@ The package ships a first-class `trendsearch` binary (same npm package, no separ
 CLI package). Maintainer expectations:
 
 - Keep command wrappers aligned with all SDK endpoints.
+- Keep experimental wrappers aligned with internal-route coverage:
+  - `experimental.topCharts`
+  - `experimental.interestOverTimeMultirange`
+  - `experimental.*Csv` variants
+  - `experimental.hotTrendsLegacy`
 - Keep JSON envelopes stable for automation users.
 - Keep exit-code mapping stable:
   - `2` usage
@@ -108,9 +113,26 @@ CLI package). Maintainer expectations:
   - `1` unknown fallback
 - Keep spinner/diagnostics on stderr and machine payloads on stdout.
 - Keep completion command working (`trendsearch completion bash|zsh|fish`).
+- Preserve rate-limit diagnostics (including `retryAfterMs` when available) for JSON automation consumers.
 
 For isolated automation and tests, set `TRENDSEARCH_CONFIG_DIR` to redirect
 persisted CLI config away from user defaults.
+
+## Internal Endpoint Risk Posture
+
+Google internal Trends routes are undocumented and can change without notice. Maintainers should assume:
+
+- elevated `429` rates under modest traffic,
+- intermittent `400`/`401`/`404`/`410` behavior on some routes,
+- occasional response-shape drift requiring schema updates and fixture refreshes.
+
+Operational guidance:
+
+1. Keep live checks running daily and review failures quickly.
+2. Favor low default concurrency and conservative retries for unstable routes.
+3. Honor `Retry-After` guidance when Google sends it, and keep that behavior intact.
+4. Treat experimental endpoint live checks as best-effort if failures match known unstable statuses.
+5. Encourage users to migrate production workloads to the official Google Trends API alpha when available.
 
 ## Publishing and Provenance
 

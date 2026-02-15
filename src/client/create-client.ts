@@ -9,7 +9,17 @@ import { RateLimiter } from "../core/resilience/rate-limiter";
 import { autocompleteEndpoint } from "../endpoints/autocomplete";
 import { dailyTrendsEndpoint } from "../endpoints/daily-trends";
 import { categoryPickerEndpoint } from "../endpoints/experimental/category-picker";
+import {
+  interestByRegionCsvEndpoint,
+  interestOverTimeCsvEndpoint,
+  interestOverTimeMultirangeCsvEndpoint,
+  relatedQueriesCsvEndpoint,
+  relatedTopicsCsvEndpoint,
+} from "../endpoints/experimental/csv";
 import { geoPickerEndpoint } from "../endpoints/experimental/geo-picker";
+import { hotTrendsLegacyEndpoint } from "../endpoints/experimental/hot-trends-legacy";
+import { interestOverTimeMultirangeEndpoint } from "../endpoints/experimental/interest-over-time-multirange";
+import { topChartsEndpoint } from "../endpoints/experimental/top-charts";
 import {
   experimentalTrendingArticlesEndpoint,
   trendingArticlesEndpoint,
@@ -136,6 +146,21 @@ export const createClient = (
       geoPicker: (input, options) => geoPickerEndpoint(context, input, options),
       categoryPicker: (input, options) =>
         categoryPickerEndpoint(context, input, options),
+      topCharts: (input, options) => topChartsEndpoint(context, input, options),
+      interestOverTimeMultirange: (input, options) =>
+        interestOverTimeMultirangeEndpoint(context, input, options),
+      interestOverTimeCsv: (input, options) =>
+        interestOverTimeCsvEndpoint(context, input, options),
+      interestOverTimeMultirangeCsv: (input, options) =>
+        interestOverTimeMultirangeCsvEndpoint(context, input, options),
+      interestByRegionCsv: (input, options) =>
+        interestByRegionCsvEndpoint(context, input, options),
+      relatedQueriesCsv: (input, options) =>
+        relatedQueriesCsvEndpoint(context, input, options),
+      relatedTopicsCsv: (input, options) =>
+        relatedTopicsCsvEndpoint(context, input, options),
+      hotTrendsLegacy: (input, options) =>
+        hotTrendsLegacyEndpoint(context, input, options),
     },
   };
 };

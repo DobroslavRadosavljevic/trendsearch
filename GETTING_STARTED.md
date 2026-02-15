@@ -27,8 +27,8 @@ TRENDSEARCH_LIVE=1 bun run test:live
 Live suite covers:
 
 - Stable: `autocomplete`, `explore`, `interestOverTime`, `interestByRegion`, `relatedQueries`, `relatedTopics`, `trendingNow`, `trendingArticles`
-- Experimental: `experimental.trendingNow`, `experimental.trendingArticles`, `experimental.geoPicker`, `experimental.categoryPicker`
-- Legacy compatibility: `dailyTrends`, `realTimeTrends` (pass if data is returned, or if `EndpointUnavailableError` is thrown)
+- Experimental: `experimental.trendingNow`, `experimental.trendingArticles`, `experimental.geoPicker`, `experimental.categoryPicker`, `experimental.topCharts`, `experimental.interestOverTimeMultirange`, `experimental.interestOverTimeCsv`, `experimental.interestOverTimeMultirangeCsv`, `experimental.interestByRegionCsv`, `experimental.relatedQueriesCsv`, `experimental.relatedTopicsCsv`, `experimental.hotTrendsLegacy`
+- Legacy compatibility: `dailyTrends`, `realTimeTrends` (pass if data is returned, or if endpoint-unavailable/schema-drift behavior is observed)
 
 ## 3. Run the CLI Locally
 
@@ -85,3 +85,13 @@ Nightly and manual live checks run via:
 - `.github/workflows/live-endpoints.yml`
 
 This catches upstream Google payload drift without making PR CI flaky.
+
+## 9. Reliability Notes for Internal Google Endpoints
+
+- Expect possible `429` throttling even at low request rates.
+- Expect occasional `400`/`401`/`404`/`410` on undocumented routes.
+- Keep request concurrency low and rely on cache + backoff.
+- The transport layer honors upstream `Retry-After` on `429` and exposes this as `RateLimitError.retryAfterMs`.
+- `hl` is forwarded as `accept-language` when not set explicitly.
+- Live checks for experimental endpoints are best-effort because Google may return temporary route-specific failures.
+- Prefer the official Google Trends API alpha for long-term production integrations.

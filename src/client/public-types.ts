@@ -4,9 +4,13 @@ import type {
   ExploreWidget,
   GeoPickerResponse,
   GeoMapData,
+  HotTrendsLegacyResponse,
   InterestOverTimePoint,
+  InterestOverTimeMultirangePoint,
   RelatedQueryItem,
   RelatedTopicItem,
+  TopChart,
+  TopChartListItem,
   Topic,
   TrendingArticleItem,
   TrendingNowItem,
@@ -204,6 +208,100 @@ export interface TrendSearchClient {
       input?: { hl?: string },
       options?: EndpointDebugOptions
     ) => Promise<EndpointOutput<{ items: CategoryPickerResponse }>>;
+    topCharts: (
+      input?: {
+        date?: number | string | Date;
+        geo?: string;
+        isMobile?: boolean;
+        hl?: string;
+        tz?: number;
+      },
+      options?: EndpointDebugOptions
+    ) => Promise<
+      EndpointOutput<{
+        charts: TopChart[];
+        items: TopChartListItem[];
+      }>
+    >;
+    interestOverTimeMultirange: (
+      input: {
+        keywords: string[];
+        geo?: string | string[];
+        time?: string;
+        category?: number;
+        property?: "" | "images" | "news" | "youtube" | "froogle";
+        hl?: string;
+        tz?: number;
+      },
+      options?: EndpointDebugOptions
+    ) => Promise<
+      EndpointOutput<{ timeline: InterestOverTimeMultirangePoint[] }>
+    >;
+    interestOverTimeCsv: (
+      input: {
+        keywords: string[];
+        geo?: string | string[];
+        time?: string;
+        category?: number;
+        property?: "" | "images" | "news" | "youtube" | "froogle";
+        hl?: string;
+        tz?: number;
+      },
+      options?: EndpointDebugOptions
+    ) => Promise<EndpointOutput<{ csv: string; contentType?: string }>>;
+    interestOverTimeMultirangeCsv: (
+      input: {
+        keywords: string[];
+        geo?: string | string[];
+        time?: string;
+        category?: number;
+        property?: "" | "images" | "news" | "youtube" | "froogle";
+        hl?: string;
+        tz?: number;
+      },
+      options?: EndpointDebugOptions
+    ) => Promise<EndpointOutput<{ csv: string; contentType?: string }>>;
+    interestByRegionCsv: (
+      input: {
+        keywords: string[];
+        geo?: string | string[];
+        time?: string;
+        category?: number;
+        property?: "" | "images" | "news" | "youtube" | "froogle";
+        resolution?: "COUNTRY" | "REGION" | "CITY" | "DMA";
+        hl?: string;
+        tz?: number;
+      },
+      options?: EndpointDebugOptions
+    ) => Promise<EndpointOutput<{ csv: string; contentType?: string }>>;
+    relatedQueriesCsv: (
+      input: {
+        keywords: string[];
+        geo?: string | string[];
+        time?: string;
+        category?: number;
+        property?: "" | "images" | "news" | "youtube" | "froogle";
+        hl?: string;
+        tz?: number;
+      },
+      options?: EndpointDebugOptions
+    ) => Promise<EndpointOutput<{ csv: string; contentType?: string }>>;
+    relatedTopicsCsv: (
+      input: {
+        keywords: string[];
+        geo?: string | string[];
+        time?: string;
+        category?: number;
+        property?: "" | "images" | "news" | "youtube" | "froogle";
+        hl?: string;
+        tz?: number;
+      },
+      options?: EndpointDebugOptions
+    ) => Promise<EndpointOutput<{ csv: string; contentType?: string }>>;
+    hotTrendsLegacy: (
+      input?: { hl?: string; tz?: number },
+      options?: EndpointDebugOptions
+    ) => Promise<EndpointOutput<{ payload: HotTrendsLegacyResponse }>>;
   };
 }
 

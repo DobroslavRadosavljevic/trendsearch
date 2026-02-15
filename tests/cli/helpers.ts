@@ -108,6 +108,30 @@ export const createMockClient = (args: {
       categoryPicker: call(
         "experimental.categoryPicker"
       ) as TrendSearchClient["experimental"]["categoryPicker"],
+      topCharts: call(
+        "experimental.topCharts"
+      ) as TrendSearchClient["experimental"]["topCharts"],
+      interestOverTimeMultirange: call(
+        "experimental.interestOverTimeMultirange"
+      ) as TrendSearchClient["experimental"]["interestOverTimeMultirange"],
+      interestOverTimeCsv: call(
+        "experimental.interestOverTimeCsv"
+      ) as TrendSearchClient["experimental"]["interestOverTimeCsv"],
+      interestOverTimeMultirangeCsv: call(
+        "experimental.interestOverTimeMultirangeCsv"
+      ) as TrendSearchClient["experimental"]["interestOverTimeMultirangeCsv"],
+      interestByRegionCsv: call(
+        "experimental.interestByRegionCsv"
+      ) as TrendSearchClient["experimental"]["interestByRegionCsv"],
+      relatedQueriesCsv: call(
+        "experimental.relatedQueriesCsv"
+      ) as TrendSearchClient["experimental"]["relatedQueriesCsv"],
+      relatedTopicsCsv: call(
+        "experimental.relatedTopicsCsv"
+      ) as TrendSearchClient["experimental"]["relatedTopicsCsv"],
+      hotTrendsLegacy: call(
+        "experimental.hotTrendsLegacy"
+      ) as TrendSearchClient["experimental"]["hotTrendsLegacy"],
     },
   };
 };

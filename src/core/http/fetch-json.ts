@@ -59,6 +59,29 @@ const readResponseText = async (response: Response): Promise<string> => {
   }
 };
 
+const parseRetryAfterMs = (value: string | null): number | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return undefined;
+  }
+
+  const seconds = Number(trimmed);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.round(seconds * 1000);
+  }
+
+  const dateMs = Date.parse(trimmed);
+  if (!Number.isNaN(dateMs)) {
+    return Math.max(0, dateMs - Date.now());
+  }
+
+  return undefined;
+};
+
 const buildRequest = async (args: {
   runtime: FetchRuntime;
   request: RequestConfig;
@@ -73,6 +96,13 @@ const buildRequest = async (args: {
 
   if (args.runtime.userAgent && !headers.has("user-agent")) {
     headers.set("user-agent", args.runtime.userAgent);
+  }
+
+  if (!headers.has("accept-language")) {
+    const language = args.request.query?.hl;
+    if (typeof language === "string" && language.trim().length > 0) {
+      headers.set("accept-language", language);
+    }
   }
 
   if (args.runtime.cookieStore) {
@@ -124,15 +154,30 @@ const requestOnce = async (args: {
     const text = await readResponseText(response);
     if (!response.ok) {
       if (response.status === 429) {
+        const retryAfterMs = parseRetryAfterMs(
+          response.headers.get("retry-after")
+        );
+
+        const retryHint =
+          typeof retryAfterMs === "number"
+            ? ` Upstream asked to retry after ~${Math.ceil(retryAfterMs / 1000)}s.`
+            : "";
+
         throw new RateLimitError({
-          message: `Rate limited on ${args.request.endpoint}.`,
+          message: `Rate limited on ${args.request.endpoint} (HTTP 429). Increase delay/backoff and reduce request concurrency.${retryHint}`,
           status: response.status,
           url,
+          retryAfterMs,
         });
       }
 
+      const detail =
+        response.status === 401
+          ? " Upstream rejected the request; refresh session cookies and verify request shape."
+          : "";
+
       throw new TransportError({
-        message: `HTTP ${response.status} while calling ${args.request.endpoint}.`,
+        message: `HTTP ${response.status} while calling ${args.request.endpoint}.${detail}`,
         url,
         status: response.status,
         responseBody: truncate(text),

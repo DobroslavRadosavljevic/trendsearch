@@ -70,6 +70,64 @@ const scenarios: {
     args: ["experimental", "category-picker"],
     expectedMethod: "experimental.categoryPicker",
   },
+  {
+    args: ["experimental", "top-charts", "--geo", "GLOBAL", "--date", "2024"],
+    expectedMethod: "experimental.topCharts",
+  },
+  {
+    args: [
+      "experimental",
+      "interest-over-time-multirange",
+      "typescript",
+      "--geo",
+      "US",
+    ],
+    expectedMethod: "experimental.interestOverTimeMultirange",
+  },
+  {
+    args: [
+      "experimental",
+      "interest-over-time-csv",
+      "typescript",
+      "--geo",
+      "US",
+    ],
+    expectedMethod: "experimental.interestOverTimeCsv",
+  },
+  {
+    args: [
+      "experimental",
+      "interest-over-time-multirange-csv",
+      "typescript",
+      "--geo",
+      "US",
+    ],
+    expectedMethod: "experimental.interestOverTimeMultirangeCsv",
+  },
+  {
+    args: [
+      "experimental",
+      "interest-by-region-csv",
+      "typescript",
+      "--geo",
+      "US",
+      "--resolution",
+      "REGION",
+    ],
+    expectedMethod: "experimental.interestByRegionCsv",
+  },
+  {
+    args: ["experimental", "related-queries-csv", "typescript", "--geo", "US"],
+    expectedMethod: "experimental.relatedQueriesCsv",
+  },
+  {
+    args: ["experimental", "related-topics-csv", "typescript", "--geo", "US"],
+    expectedMethod: "experimental.relatedTopicsCsv",
+  },
+  {
+    args: ["experimental", "hot-trends-legacy"],
+    expectedMethod: "experimental.hotTrendsLegacy",
+  },
 ];
 
 describe("cli command mapping", () => {

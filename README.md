@@ -11,7 +11,7 @@ Modern Google Trends SDK for Node.js and Bun, built with native `fetch`, strict 
 - 🛡️ Built-in retry/backoff + rate limiting (`p-retry` + `p-queue`)
 - 🍪 Optional cookie persistence support
 - 🖥️ First-class `trendsearch` CLI for every endpoint
-- 🌐 Stable Google Trends API endpoints + experimental RPC/picker endpoints
+- 🌐 Stable Google Trends API endpoints + experimental RPC/picker/CSV/top charts endpoints
 - 🧪 Deterministic fixture contracts + optional live endpoint tests
 
 ## 📦 Install
@@ -235,10 +235,53 @@ Supported env vars include:
 - `experimental.trendingArticles`
 - `experimental.geoPicker`
 - `experimental.categoryPicker`
+- `experimental.topCharts`
+- `experimental.interestOverTimeMultirange`
+- `experimental.interestOverTimeCsv`
+- `experimental.interestOverTimeMultirangeCsv`
+- `experimental.interestByRegionCsv`
+- `experimental.relatedQueriesCsv`
+- `experimental.relatedTopicsCsv`
+- `experimental.hotTrendsLegacy`
 
 ⚠️ Experimental endpoints are semver-minor unstable because Google can change internal RPC payloads.
 
 ℹ️ `dailyTrends` and `realTimeTrends` are kept for compatibility and may throw `EndpointUnavailableError` if Google retires those legacy routes.
+
+### Operational Caveats (Important)
+
+- Internal/undocumented Google Trends routes can throttle aggressively (`HTTP 429`) even at low request volume.
+- Some route families can intermittently fail with `HTTP 400`, `401`, `404`, or `410` depending on backend changes.
+- For production use, keep concurrency low, cache aggressively, and use longer backoff windows.
+- Prefer the official Google Trends API (alpha) when available for long-lived production integrations.
+- Related data endpoints can validly return empty lists for some keywords/time windows.
+
+### Reducing `429` in Practice
+
+`trendsearch` automatically retries on `429`, and when Google sends a `Retry-After` header,
+the client respects that wait window before retrying.
+
+Recommended profile for unstable/internal routes:
+
+```ts
+import { MemoryCookieStore, createClient } from "trendsearch";
+
+const client = createClient({
+  timeoutMs: 30_000,
+  retries: {
+    maxRetries: 5,
+    baseDelayMs: 2_500,
+    maxDelayMs: 45_000,
+  },
+  rateLimit: {
+    maxConcurrent: 1,
+    minDelayMs: 5_000,
+  },
+  userAgent:
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+  cookieStore: new MemoryCookieStore(),
+});
+```
 
 ## 🧰 Client Configuration
 
@@ -404,6 +447,7 @@ Output:
 - `data.top`
 - `data.rising`
 - `value` can be `number | string` (`"Breakout"`-style upstream values are preserved)
+- `data.top` and `data.rising` may be empty arrays for some requests
 
 ### `relatedTopics`
 
@@ -423,6 +467,7 @@ Output:
 
 - `data.top`
 - `data.rising`
+- `data.top` and `data.rising` may be empty arrays for some requests
 
 ### `dailyTrends`
 
@@ -519,6 +564,60 @@ const result = await experimental.categoryPicker({ hl: "en-US" });
 console.log(result.data.items);
 ```
 
+### `experimental.topCharts`
+
+```ts
+import { experimental } from "trendsearch";
+
+const result = await experimental.topCharts({
+  date: 2024,
+  geo: "GLOBAL",
+});
+
+console.log(result.data.charts);
+console.log(result.data.items);
+```
+
+### `experimental.interestOverTimeMultirange`
+
+```ts
+import { experimental } from "trendsearch";
+
+const result = await experimental.interestOverTimeMultirange({
+  keywords: ["typescript"],
+  geo: "US",
+  time: "today 3-m",
+});
+
+console.log(result.data.timeline);
+```
+
+### CSV Variants (`experimental.*Csv`)
+
+```ts
+import { experimental } from "trendsearch";
+
+const result = await experimental.relatedQueriesCsv({
+  keywords: ["typescript"],
+  geo: "US",
+});
+
+console.log(result.data.csv);
+```
+
+`experimental.interestOverTimeCsv`, `experimental.interestOverTimeMultirangeCsv`,
+`experimental.interestByRegionCsv`, `experimental.relatedQueriesCsv`, and
+`experimental.relatedTopicsCsv` currently return raw CSV text (`data.csv`) in v1.
+
+### `experimental.hotTrendsLegacy`
+
+```ts
+import { experimental } from "trendsearch";
+
+const result = await experimental.hotTrendsLegacy();
+console.log(result.data.payload);
+```
+
 ## 🧾 Schemas and Types
 
 All request/response schemas and inferred types are exported:
@@ -564,6 +663,7 @@ try {
 } catch (error) {
   if (error instanceof RateLimitError) {
     console.error("Rate limited:", error.status);
+    console.error("Retry after ms:", error.retryAfterMs);
   }
 
   if (error instanceof SchemaValidationError) {
@@ -586,6 +686,11 @@ bun run test:contracts
 bun run test:all
 TRENDSEARCH_LIVE=1 bun run test:live
 ```
+
+Live test notes:
+
+- The live suite is intentionally slower (conservative pacing) to reduce `429`.
+- Experimental routes are best-effort and can be unavailable depending on backend state.
 
 Package checks:
 

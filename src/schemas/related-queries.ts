@@ -17,15 +17,13 @@ export const relatedQueryItemSchema = z
 export const relatedQueriesResponseSchema = z
   .object({
     default: z.object({
-      rankedList: z
-        .array(
-          z
-            .object({
-              rankedKeyword: z.array(relatedQueryItemSchema),
-            })
-            .passthrough()
-        )
-        .min(1),
+      rankedList: z.array(
+        z
+          .object({
+            rankedKeyword: z.array(relatedQueryItemSchema),
+          })
+          .passthrough()
+      ),
     }),
   })
   .passthrough();

@@ -85,6 +85,7 @@ const fromUnknownError = (error: unknown): NormalizedCliError => {
       details: {
         status: error.status,
         url: error.url,
+        retryAfterMs: error.retryAfterMs,
       },
       exitCode: EXIT_CODES.rateLimited,
     };

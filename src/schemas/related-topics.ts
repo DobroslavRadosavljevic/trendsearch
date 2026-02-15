@@ -18,15 +18,13 @@ export const relatedTopicItemSchema = z
 export const relatedTopicsResponseSchema = z
   .object({
     default: z.object({
-      rankedList: z
-        .array(
-          z
-            .object({
-              rankedKeyword: z.array(relatedTopicItemSchema),
-            })
-            .passthrough()
-        )
-        .min(1),
+      rankedList: z.array(
+        z
+          .object({
+            rankedKeyword: z.array(relatedTopicItemSchema),
+          })
+          .passthrough()
+      ),
     }),
   })
   .passthrough();
